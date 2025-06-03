@@ -1,8 +1,11 @@
 import pytest
-from constants import REGISTER_ENDPOINT, LOGIN_ENDPOINT
+import requests
+from constants import REGISTER_ENDPOINT, LOGIN_ENDPOINT, BASE_URL, HEADERS
+from custom_requester.custom_requester import CustomRequester
+from api.api_manager import ApiManager
+
 
 class TestAuthAPI:
-
 
     def test_register_user(self, requester, test_user):
         """
