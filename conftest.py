@@ -1,8 +1,11 @@
 import pytest
 import requests
+
+from api.api_manager import ApiManager
 from constants import BASE_URL, HEADERS, REGISTER_ENDPOINT, LOGIN_ENDPOINT
 from custom_requester.custom_requester import CustomRequester
 from utils.data_generator import DataGenerator
+
 
 @pytest.fixture(scope='function')
 def test_user():
@@ -75,3 +78,20 @@ def requester():
     """
     session = requests.Session()
     return CustomRequester(session=session, base_url=BASE_URL)
+
+@pytest.fixture(scope="session")
+def session():
+    """
+    Фикстура для создания HTTP-сессии.
+    """
+
+    http_session = requests.Session()
+    yield http_session
+    http_session.close()
+
+@pytest.fixture(scope="session")
+def api_manager(session):
+    """
+
+    """
+    return ApiManager(session)
