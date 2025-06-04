@@ -1,6 +1,5 @@
 import pytest
 import requests
-
 from api.api_manager import ApiManager
 from constants import BASE_URL, HEADERS, REGISTER_ENDPOINT, LOGIN_ENDPOINT
 from custom_requester.custom_requester import CustomRequester
@@ -59,21 +58,20 @@ def test_user():
 #     return session
 
 @pytest.fixture(scope="function")
-def registered_user(requester, test_user):
+def registered_user(api_manager, test_user):
     """
     Фикстура для регистрации и получения данных зарегистрированного пользователя.
+    Обеспечивает очистку созданного пользователя после завершения теста.
     """
-    response = requester.send_request(
-        method="POST",
-        endpoint=REGISTER_ENDPOINT,
-        data=test_user,
-        expected_status=201
-    )
+    response = api_manager.auth_api.register_user(user_data= test_user, expected_status= 201)
+
     response_data = response.json()
     registered_user = test_user.copy()
     registered_user["id"] = response_data["id"]
-    return registered_user
 
+    yield registered_user # Возвращаем зарегистрированного пользователя для использования в тесте
+    # Код после 'yield' выполняется после завершения теста
+    api_manager.user_api.clean_up_user(user_id= registered_user["id"])
 
 @pytest.fixture(scope="session")
 def requester():
