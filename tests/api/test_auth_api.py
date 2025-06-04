@@ -7,17 +7,11 @@ from api.api_manager import ApiManager
 
 class TestAuthAPI:
 
-    def test_register_user(self, requester, test_user):
+    def test_register_user(self, api_manager: ApiManager, test_user):
         """
         Тест на регистрацию пользователя.
         """
-        response = requester.send_request(
-            method="POST",
-            endpoint=REGISTER_ENDPOINT,
-            data=test_user,
-            expected_status=201
-        )
-
+        response = api_manager.auth_api.register_user(test_user)
         response_data = response.json()
 
         assert response_data["email"] == test_user["email"], "Email не совпадает"
@@ -26,23 +20,17 @@ class TestAuthAPI:
         assert "USER" in response_data["roles"], "Роль USER должна быть у пользователя"
 
 
-    def test_login_user(self, requester, registered_user):
+    def test_register_and_login_user(self, api_manager: ApiManager, registered_user):
         """
         Тест на регистрацию и авторизацию пользователя.
         """
-
         login_data = {
             "email": registered_user["email"],
             "password": registered_user["password"]
         }
 
-        response = requester.send_request(
-            method="POST",
-            endpoint=LOGIN_ENDPOINT,
-            data=login_data,
-            expected_status=201
-        )
-
+        # ИЗМЕНЕНО: Передаем login_data, а не registered_user целиком
+        response = api_manager.auth_api.login_user(login_data)
         response_data = response.json()
 
         assert "accessToken" in response_data, "Токен доступа отсутствует в ответе"
@@ -50,7 +38,7 @@ class TestAuthAPI:
 
     # НЕГАТИВНЫЕ ПРОВЕРКИ
     @pytest.mark.negative
-    def test_login_with_invalid_password(self, requester, registered_user):
+    def test_login_with_invalid_password(self, api_manager: ApiManager, registered_user):
         """
         Проверка авторизации с невалидным паролем.
         """
@@ -60,14 +48,8 @@ class TestAuthAPI:
             "password": "WrongPassword123!"  # неправильный пароль
         }
 
-        # ожидаем 401, а не 201
-        response = requester.send_request(
-            method="POST",
-            endpoint=LOGIN_ENDPOINT,
-            data=login_data,
-            expected_status=401
-        )
 
+        response = api_manager.auth_api.login_user(login_data, expected_status=401)
         response_data = response.json()
 
         assert "error" in response_data, "Сообщение об ошибке отсутствует в ответе"
@@ -75,7 +57,7 @@ class TestAuthAPI:
 
 
     @pytest.mark.negative
-    def test_login_with_invalid_login(self, requester, registered_user):
+    def test_login_with_invalid_login(self, api_manager: ApiManager, registered_user):
         """
         проверка авторизации с несуществующим email
         """
@@ -85,13 +67,7 @@ class TestAuthAPI:
             "password": registered_user["password"]
         }
 
-        response = requester.send_request(
-            method="POST",
-            endpoint=LOGIN_ENDPOINT,
-            data=login_data,
-            expected_status=401
-        )
-
+        response = api_manager.auth_api.login_user(login_data, expected_status=401)
         response_data = response.json()
 
         assert "error" in response_data, "Сообщение об ошибке отсутствует в ответе"
@@ -99,7 +75,7 @@ class TestAuthAPI:
 
 
     @pytest.mark.negative
-    def test_login_without_body(self, requester, registered_user):
+    def test_login_without_body(self, api_manager: ApiManager, registered_user):
         """
         проверка авторизации с пустым телом запроса
         """
@@ -107,12 +83,7 @@ class TestAuthAPI:
         # пустое тело
         login_data = {}
 
-        response = requester.send_request(
-            method="POST",
-            endpoint=LOGIN_ENDPOINT,
-            data=login_data,
-            expected_status=401
-        )
+        response = api_manager.auth_api.login_user(login_data, expected_status=401)
 
         response_data = response.json()
 
