@@ -48,7 +48,6 @@ class TestAuthAPI:
             "password": "WrongPassword123!"  # неправильный пароль
         }
 
-
         response = api_manager.auth_api.login_user(login_data, expected_status=401)
         response_data = response.json()
 
