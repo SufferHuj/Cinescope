@@ -1,15 +1,14 @@
 import pytest
-import requests
-from constants import REGISTER_ENDPOINT, LOGIN_ENDPOINT, BASE_URL, HEADERS
-from custom_requester.custom_requester import CustomRequester
 from api.api_manager import ApiManager
 
 
 class TestAuthAPI:
 
     def test_register_user(self, api_manager: ApiManager, test_user):
+
         """
         Тест на регистрацию пользователя.
+
         """
         response = api_manager.auth_api.register_user(test_user)
         response_data = response.json()
@@ -21,15 +20,16 @@ class TestAuthAPI:
 
 
     def test_register_and_login_user(self, api_manager: ApiManager, registered_user):
+
         """
         Тест на регистрацию и авторизацию пользователя.
         """
+
         login_data = {
             "email": registered_user["email"],
             "password": registered_user["password"]
         }
 
-        # ИЗМЕНЕНО: Передаем login_data, а не registered_user целиком
         response = api_manager.auth_api.login_user(login_data)
         response_data = response.json()
 
@@ -37,15 +37,17 @@ class TestAuthAPI:
         assert response_data["user"]["email"] == registered_user["email"], "Email не совпадает"
 
     # НЕГАТИВНЫЕ ПРОВЕРКИ
+
     @pytest.mark.negative
     def test_login_with_invalid_password(self, api_manager: ApiManager, registered_user):
+
         """
         Проверка авторизации с невалидным паролем.
         """
 
         login_data = {
             "email": registered_user["email"],
-            "password": "WrongPassword123!"  # неправильный пароль
+            "password": "WrongPassword123!"
         }
 
         response = api_manager.auth_api.login_user(login_data, expected_status=401)
@@ -57,6 +59,7 @@ class TestAuthAPI:
 
     @pytest.mark.negative
     def test_login_with_invalid_login(self, api_manager: ApiManager, registered_user):
+
         """
         проверка авторизации с несуществующим email
         """
@@ -72,18 +75,16 @@ class TestAuthAPI:
         assert "error" in response_data, "Сообщение об ошибке отсутствует в ответе"
         assert "Unauthorized" in response_data.get("error", ""), "Сообщение об ошибке некорректное"
 
-
     @pytest.mark.negative
     def test_login_without_body(self, api_manager: ApiManager, registered_user):
+
         """
         проверка авторизации с пустым телом запроса
         """
 
-        # пустое тело
         login_data = {}
 
         response = api_manager.auth_api.login_user(login_data, expected_status=401)
-
         response_data = response.json()
 
         assert "error" in response_data, "Сообщение об ошибке отсутствует в ответе"

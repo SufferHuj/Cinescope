@@ -3,7 +3,9 @@ import logging
 import os
 from constants import BASE_URL, HEADERS
 
+
 class CustomRequester:
+
     """
     Инициализация кастомного реквестера
     :param session: Объект requests.Session
