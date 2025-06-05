@@ -8,21 +8,27 @@ class CustomRequester:
     Инициализация кастомного реквестера
     :param session: Объект requests.Session
     :param base_url: Базовый URL API
+    :param default_headers: Заголовки, которые будут использоваться по умолчанию для всех запросов
     """
 
-    def __init__(self, session, base_url = BASE_URL):
+    def __init__(self, session, base_url=BASE_URL, default_headers=None):
         self.session = session
         self.base_url = base_url
         self.headers = HEADERS.copy()
+        if default_headers:
+            self.headers.update(default_headers)
+
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.INFO)
 
-    def send_request(self, method, endpoint, data=None, expected_status=200, need_logging=True):
+    def send_request(self, method, endpoint, data=None, params=None, headers=None, expected_status=200, need_logging=True):
         """
         Универсальный метод для отправки запросов.
         :param method: HTTP метод (GET, POST, PUT, DELETE и т.д.).
         :param endpoint: эндпоинт (например, "/login").
         :param data: Тело запроса (JSON-данные).
+        :param params: Параметры запроса (для GET-запросов).
+        :param headers: Дополнительные заголовки для данного конкретного запроса.
         :param expected_status: Ожидаемый статус-код (по умолчанию 200).
         :param need_logging: Флаг для логирования (по умолчанию True).
         :return: Объект ответа requests.Response.
@@ -30,7 +36,11 @@ class CustomRequester:
 
         url = f"{self.base_url}{endpoint}"
 
-        response = self.session.request(method, url, json=data, headers = self.headers)
+        request_headers = self.headers.copy()
+        if headers:
+            request_headers.update(headers)
+
+        response = self.session.request(method, url, json=data, params=params, headers=request_headers)
 
         if need_logging:
             self.log_request_and_response(response)
@@ -40,14 +50,13 @@ class CustomRequester:
 
         return response
 
-    def _update_session_headers(self, session, **kwargs):
+    def _update_session_headers(self, **kwargs):
         """
         Обновление заголовков сессии.
         :param session: Объект requests.Session, предоставленный API-классом.
         :param kwargs: Дополнительные заголовки.
         """
         self.headers.update(kwargs)  # Обновляем базовые заголовки
-        session.headers.update(self.headers)  # Обновляем заголовки в текущей сессии
 
     def log_request_and_response(self, response):
         try:
