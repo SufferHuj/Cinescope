@@ -3,7 +3,7 @@ from custom_requester.custom_requester import CustomRequester
 class UserAPI(CustomRequester):
 
     """
-    Класс для работы с API пользователей.
+    Класс для работы с API пользователей
     """
 
     # ИЗМЕНЕНО: Конструктор теперь принимает session и base_url
