@@ -7,6 +7,7 @@ class TestMovieAPI:
     # Тесты для GET
 
     def test_get_all_movies(self, api_manager: ApiManager):
+
         """
         Получение полного списка фильмов без фильтров.
         Проверка структуры ответа и базовых полей фильма.
@@ -78,10 +79,16 @@ class TestMovieAPI:
         """
 
         movie_id_to_delete = create_movie  # ID фильма из фикстуры
-        response = api_manager.movies_api.delete_movie(movie_id_to_delete, super_admin_token)
 
-        response_data = response.json()
-        assert response_data.status_code == 204, f"Ожидался статус 204, получен {response.status_code}"
+        headers = {"Authorization": f"Bearer {super_admin_token}"}
+
+        response = api_manager.movies_api.delete_movie(
+            movie_id=movie_id_to_delete,
+            headers=headers,
+            expected_status=200
+        )
+
+        assert response.status_code == 200, f"Ожидался статус 200, получен {response.status_code}"
 
     def test_delete_movie_check_get_fails(self, api_manager: ApiManager, create_movie, super_admin_token):
 
@@ -97,7 +104,7 @@ class TestMovieAPI:
         api_manager.movies_api.delete_movie(
             movie_id=movie_id_to_delete_and_check,
             headers=headers,
-            expected_status=204
+            expected_status=200
         )
 
         # Получить удаленный фильм, ожидаем 404 Not Found

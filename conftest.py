@@ -84,6 +84,9 @@ def api_manager(session):
 
     return ApiManager(session)
 
+
+
+
 # ФИКСТУРЫ ДЛЯ ТЕСТОВ MoviesAPI
 
 @pytest.fixture(scope='session')
@@ -93,8 +96,8 @@ def super_admin_data():
     Данные для создания/логина супер-администратора.
     """
 
-    email = DataGenerator.generation_random_email()
-    password = DataGenerator.generation_random_password()
+    email = 'api1@gmail.com'
+    password = 'asdqwe123Q'
 
     return {
         "email": email,
@@ -111,16 +114,6 @@ def super_admin_token(api_manager_session_scope, super_admin_data): # Испол
     Фикстура для получения токена супер-администратора.
     Регистрирует и/или логинит супер-администратора.
     """
-
-    # Попытка регистрации
-    try:
-        api_manager_session_scope.auth_api.register_user(user_data=super_admin_data, expected_status=201)
-        print(f"SUPER_ADMIN registered: {super_admin_data['email']}")
-    except ValueError as e:
-        if "409" in str(e) or "Conflict" in str(e) or "уже существует" in str(e).lower(): # Пользователь уже существует
-            print(f"SUPER_ADMIN {super_admin_data['email']} already exists. Proceeding to login.")
-        else: # Другая ошибка регистрации
-            pytest.fail(f"SUPER_ADMIN registration failed: {e}")
 
     # Логин
     login_data = {
@@ -153,13 +146,13 @@ def movie_data():
     """
     Фикстура для генерации валидных данных фильма.
     """
-
+    location = ["MSK", "SPB"]
     return {
         "name": f"Test Movie - {global_faker.catch_phrase()}",
         "imageUrl": global_faker.image_url(),
         "price": random.randint(50, 500),
         "description": global_faker.text(max_nb_chars=150),
-        "location": [global_faker.city() for _ in range(random.randint(1, 2))],
+        "location": random.choice(location),
         "published": True,
         "genreId": random.randint(1, 10)
     }
