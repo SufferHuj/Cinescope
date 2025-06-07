@@ -27,7 +27,7 @@ class MoviesAPI(CustomRequester):
             expected_status=expected_status
         )
 
-    def get_movie_by_id(self, movie_id, expected_status=200):
+    def get_movie(self, movie_id, expected_status=200):
 
         """
         Получение конкретного фильма по его ID.
@@ -42,12 +42,11 @@ class MoviesAPI(CustomRequester):
             expected_status=expected_status
         )
 
-    def create_movie(self, movie_data, headers, expected_status=201):
+    def create_movie(self, movie_data, expected_status=201):
 
         """
         Создание нового фильма. Требуется токен авторизации.
         :param movie_data: Данные нового фильма (словарь).
-        :param headers: Дополнительные заголовки, включая Authorization.
         :param expected_status: Ожидаемый статус-код (по умолчанию 201).
         :return: Объект ответа requests.Response.
         """
@@ -56,16 +55,14 @@ class MoviesAPI(CustomRequester):
             method="POST",
             endpoint="/movies",
             data=movie_data,
-            headers=headers, # Передаем заголовки, содержащие токен
             expected_status=expected_status
         )
 
-    def delete_movie(self, movie_id, headers=None, expected_status=200):
+    def delete_movie(self, movie_id, expected_status=200):
 
         """
         Удаление фильма по его ID. Требуется токен авторизации.
         :param movie_id: ID фильма.
-        :param headers: Дополнительные заголовки, включая Authorization.
         :param expected_status: Ожидаемый статус-код (по умолчанию 200).
         :return: Объект ответа requests.Response.
         """
@@ -73,6 +70,5 @@ class MoviesAPI(CustomRequester):
         return self.send_request(
             method="DELETE",
             endpoint=f"/movies/{movie_id}",
-            headers=headers, # Передаем заголовки, содержащие токен
             expected_status=expected_status
         )

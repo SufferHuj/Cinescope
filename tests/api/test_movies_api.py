@@ -111,8 +111,6 @@ class TestMovieAPI:
         with pytest.raises(ValueError) as ex:
             api_manager.movies_api.get_movie_by_id(
                 movie_id=movie_id_to_delete_and_check
-                # get_movie_by_id по умолчанию ожидает 200,
-                # поэтому если фильм не найден (404), CustomRequester выбросит ValueError
             )
         assert "Unexpected status code: 404" in str(ex.value), \
             "Ожидалась ошибка ValueError со статусом 404 при попытке GET удаленного фильма."

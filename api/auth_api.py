@@ -41,11 +41,10 @@ class AuthAPI(CustomRequester):
             expected_status=expected_status
         )
 
-    def authenticate(self, user_cards):
-
+    def authenticate(self, user_creds):
         login_data = {
-            "email": user_cards[0],
-            "password": user_cards[1]
+            "email": user_creds[0],
+            "password": user_creds[1]
         }
 
         response = self.login_user(login_data).json()
@@ -53,4 +52,4 @@ class AuthAPI(CustomRequester):
             raise KeyError("token is missing")
 
         token = response["accessToken"]
-        self._update_session_headers(**{"authorization": "Bearer" + token})
+        self._update_session_headers(**{"authorization": "Bearer " + token})

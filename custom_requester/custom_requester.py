@@ -16,9 +16,9 @@ class CustomRequester:
     def __init__(self, session, base_url=BASE_URL, default_headers=None):
         self.session = session
         self.base_url = base_url
-        self.headers = HEADERS.copy()
+        self.session.headers.update(HEADERS)
         if default_headers:
-            self.headers.update(default_headers)
+            self.session.headers.update(default_headers)
 
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.INFO)
@@ -38,7 +38,7 @@ class CustomRequester:
 
         url = f"{self.base_url}{endpoint}"
 
-        request_headers = self.headers.copy()
+        request_headers = self.session.headers.copy()
         if headers:
             request_headers.update(headers)
 
@@ -58,7 +58,7 @@ class CustomRequester:
         :param session: Объект requests.Session, предоставленный API-классом.
         :param kwargs: Дополнительные заголовки.
         """
-        self.headers.update(kwargs)  # Обновляем базовые заголовки
+        self.session.headers.update(kwargs)  # Обновляем базовые заголовки
 
     def log_request_and_response(self, response):
         try:

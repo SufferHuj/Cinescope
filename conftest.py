@@ -6,7 +6,8 @@ from api.api_manager import ApiManager
 from constants import BASE_URL, HEADERS, REGISTER_ENDPOINT, LOGIN_ENDPOINT, MOVIES_API_BASE_URL
 from custom_requester.custom_requester import CustomRequester
 from utils.data_generator import DataGenerator
-from utils.data_generator import faker as global_faker
+from entities.user import User
+from resources.user_creds import SuperAdminCreds
 
 
 @pytest.fixture(scope='function')
@@ -84,121 +85,43 @@ def api_manager(session):
 
     return ApiManager(session)
 
-
-
-
 # ФИКСТУРЫ ДЛЯ ТЕСТОВ MoviesAPI
 
-@pytest.fixture(scope='session')
-def super_admin_data():
+@pytest.fixture()
+def user_session():
 
-    """
-    Данные для создания/логина супер-администратора.
-    """
+    user_pool = []
 
-    email = 'api1@gmail.com'
-    password = 'asdqwe123Q'
+    def _create_user_session():
+        session = requests.Session()
+        user_session = ApiManager(session)
+        user_pool.append(user_session)
+        return user_session
 
-    return {
-        "email": email,
-        "fullName": "Admin",
-        "password": password,
-        "passwordRepeat": password,
-        "roles": ["SUPER_ADMIN"]
-    }
+    yield _create_user_session()
 
-@pytest.fixture(scope="session")
-def super_admin_token(api_manager_session_scope, super_admin_data): # Используки session-scoped ApiManager
+    for user in user_pool:
+        user.close_session()
 
-    """
-    Фикстура для получения токена супер-администратора.
-    Регистрирует и/или логинит супер-администратора.
-    """
+@pytest.fixture
+def super_admin(user_session):
 
-    # Логин
-    login_data = {
-        "email": super_admin_data["email"],
-        "password": super_admin_data["password"]
-    }
-    response = api_manager_session_scope.auth_api.login_user(login_data=login_data, expected_status=200)
-    token = response.json().get("accessToken")
-    if not token:
-        pytest.fail("Failed to get SUPER_ADMIN access token.")
-    print(f"SUPER_ADMIN token obtained for {super_admin_data['email']}")
-    return token
+    new_session = user_session
 
-@pytest.fixture(scope="session")
-def api_manager_session_scope(): # Отдельный ApiManager для session-scope фикстур, чтобы избежать конфликтов
+    super_admin = User(
+        SuperAdminCreds.USERNAME,
+        SuperAdminCreds.PASSWORD,
+        ["SUPER_ADMIN"],
+        new_session)
 
-    """
-    ApiManager с привязкой к сессии для super_admin_token
-    """
-
-    s = requests.Session()
-    manager = ApiManager(s)
-
-    yield manager
-    s.close()
-
-@pytest.fixture(scope='function')
-def movie_data():
-
-    """
-    Фикстура для генерации валидных данных фильма.
-    """
-    location = ["MSK", "SPB"]
-    return {
-        "name": f"Test Movie - {global_faker.catch_phrase()}",
-        "imageUrl": global_faker.image_url(),
-        "price": random.randint(50, 500),
-        "description": global_faker.text(max_nb_chars=150),
-        "location": random.choice(location),
-        "published": True,
-        "genreId": random.randint(1, 10)
-    }
+    super_admin.api.auth_api.authenticate(super_admin.creds)
+    return super_admin
 
 @pytest.fixture(scope="function")
-def create_movie(api_manager, super_admin_token, movie_data):
-
-    """
-    Фикстура для создания фильма и возврата его ID.
-    Обеспечивает очистку (удаление) созданного фильма после теста.
-    Имя фикстуры 'create_movie' соответствует использованию в примере теста на удаление.
-    """
-
-    headers_with_token = {
-        "Authorization": f"Bearer {super_admin_token}",
-        "Content-Type": "application/json",
-        "Accept": "application/json"
-    }
-
-    response = api_manager.movies_api.create_movie(
-        movie_data=movie_data,
-        headers=headers_with_token,
-        expected_status=201
-    )
-    created_movie_details = response.json()
-    assert "id" in created_movie_details, "ID фильма отсутствует в ответе на создание"
-    movie_id = created_movie_details["id"]
-
-    yield movie_id
-
-    # Код очистки после завершения теста
-    try:
-        print(f"Attempting to clean up movie with ID: {movie_id}")
-
-        api_manager.movies_api.delete_movie(
-            movie_id=movie_id,
-            headers=headers_with_token,
-            expected_status=200
-        )
-        print(f"Successfully cleaned up movie with ID: {movie_id}")
-    except ValueError as e:
-        # Если фильм уже был удален тестом, API может вернуть 404
-        if "404" in str(e) or "not found" in str(e).lower():
-            print(f"Movie with ID {movie_id} not found during cleanup (already deleted or never existed).")
-        else:
-            print(f"Error during movie cleanup (ID: {movie_id}): {e}. This might be an issue.")
-
-    except Exception as e:
-        print(f"An unexpected error occurred during movie cleanup (ID: {movie_id}): {e}")
+def creation_user_data(test_user):
+    updated_data = test_user.copy()
+    updated_data.update({
+        "verified": True,
+        "banned": False
+    })
+    return updated_data
