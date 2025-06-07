@@ -3,11 +3,13 @@ import requests
 import random
 
 from api.api_manager import ApiManager
-from constants import BASE_URL, HEADERS, REGISTER_ENDPOINT, LOGIN_ENDPOINT, MOVIES_API_BASE_URL
+from constants import BASE_URL
 from custom_requester.custom_requester import CustomRequester
 from utils.data_generator import DataGenerator
 from entities.user import User
 from resources.user_creds import SuperAdminCreds
+from constants import Roles
+from utils.data_generator import faker as global_faker
 
 
 @pytest.fixture(scope='function')
@@ -26,7 +28,7 @@ def test_user():
         "fullName": random_name,
         "password": random_password,
         "passwordRepeat": random_password,
-        "roles": ["USER"]
+        "roles": [Roles.USER.value]
     }
 
 @pytest.fixture(scope="function")
@@ -85,10 +87,12 @@ def api_manager(session):
 
     return ApiManager(session)
 
-# ФИКСТУРЫ ДЛЯ ТЕСТОВ MoviesAPI
-
 @pytest.fixture()
 def user_session():
+
+    """
+    Фикстура на создание сессии юзера
+    """
 
     user_pool = []
 
@@ -106,12 +110,16 @@ def user_session():
 @pytest.fixture
 def super_admin(user_session):
 
+    """
+    Фикстура на создание пользователя с ролью SUPER_ADMIN
+    """
+
     new_session = user_session
 
     super_admin = User(
         SuperAdminCreds.USERNAME,
         SuperAdminCreds.PASSWORD,
-        ["SUPER_ADMIN"],
+        [Roles.SUPER_ADMIN.value],
         new_session)
 
     super_admin.api.auth_api.authenticate(super_admin.creds)
@@ -119,9 +127,95 @@ def super_admin(user_session):
 
 @pytest.fixture(scope="function")
 def creation_user_data(test_user):
+
+    """
+    Фикстура для создания общего юзера
+    """
+
     updated_data = test_user.copy()
     updated_data.update({
         "verified": True,
         "banned": False
     })
     return updated_data
+
+@pytest.fixture
+def common_user(user_session, super_admin, creation_user_data):
+
+    """
+    Фикстура для создания юзера с ролью USER
+    """
+
+    new_session = user_session
+
+    common_user = User(
+        creation_user_data['email'],
+        creation_user_data['password'],
+        [Roles.USER.value],
+        new_session)
+
+    super_admin.api.user_api.create_user(creation_user_data)
+    common_user.api.auth_api.authenticate(common_user.creds)
+    return common_user
+
+@pytest.fixture
+def admin(user_session, super_admin, creation_user_data):
+
+    """
+    Фикстура для создания юзера с ролью USER
+    """
+
+    new_session = user_session
+
+    admin = User(
+        creation_user_data['email'],
+        creation_user_data['password'],
+        [Roles.ADMIN.value],
+        new_session)
+
+    super_admin.api.user_api.create_user(creation_user_data)
+    admin.api.auth_api.authenticate(admin.creds)
+    return admin
+
+# ФИКСТУРЫ ДЛЯ ТЕСТОВ MoviesAPI
+
+@pytest.fixture(scope='function')
+def movie_data():
+
+    """
+    Фикстура для генерации валидных данных фильма.
+    """
+
+    location = ["MSK", "SPB"]
+
+    return {
+        "name": f"Test Movie - {global_faker.catch_phrase()}",
+        "imageUrl": global_faker.image_url(),
+        "price": random.randint(50, 500),
+        "description": global_faker.text(max_nb_chars=150),
+        "location": random.choice(location),
+        "published": True,
+        "genreId": random.randint(1, 10)
+    }
+
+@pytest.fixture(scope="function")
+def create_movie(super_admin, movie_data):
+
+    """
+    Фикстура для создания фильма и возврата его ID.
+    Обеспечивает очистку (удаление) созданного фильма после теста.
+    Имя фикстуры 'create_movie' соответствует использованию в примере теста на удаление.
+    """
+
+
+    response = super_admin.api.movies_api.create_movie(
+        movie_data=movie_data,
+        expected_status=201
+    )
+
+    created_movie_details = response.json()
+
+    assert "id" in created_movie_details, "ID фильма отсутствует в ответе на создание"
+    movie_id = created_movie_details["id"]
+
+    return movie_id

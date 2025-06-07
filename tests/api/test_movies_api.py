@@ -48,16 +48,16 @@ class TestMovieAPI:
             assert "id" in movie
             assert "name" in movie
 
-    # Тест для POST
+    # Тесты для POST
 
-    def test_create_movie_valid_data(self, super_admin_token, movie_data, api_manager: ApiManager):
+    def test_create_movie_valid_data(self, movie_data, super_admin):
+
         """
-        Успешное создание фильма с валидными данными.
+        Успешное создание фильма с валидными данными (роль: SUPER_ADMIN)
         """
-        headers = {"Authorization": f"Bearer {super_admin_token}"}
-        response = api_manager.movies_api.create_movie(
+
+        response = super_admin.api.movies_api.create_movie(
             movie_data=movie_data,
-            headers=headers,
             expected_status=201
         )
         response_data = response.json()
@@ -68,49 +68,44 @@ class TestMovieAPI:
         assert response_data["price"] == movie_data["price"], "Цена фильма не совпадает"
         assert response_data["genreId"] == movie_data["genreId"], "ID жанра не совпадает"
 
+    # НЕГАТИВНЫЙ ТЕСТ POST
 
-    # Тесты для DELETE
+    def test_create_movie_with_invalid_user(self, movie_data, common_user):
 
-    def test_delete_movie_success(self, api_manager: ApiManager, create_movie, super_admin_token):
+        """
+        Проверка создания фильма под ролью USER
+        """
+
+        response = common_user.api.movies_api.create_movie(
+            movie_data=movie_data,
+            expected_status=403
+        )
+
+        assert response.status_code == 403, f"Ожидался статус 403, получен {response.status_code}"
+
+    # Тест для DELETE
+
+    def test_delete_movie_success(self, create_movie, super_admin):
 
         """
         Успешное удаление фильма с валидным ID.
-        Фикстура 'create_movie' создает фильм и возвращает его ID.
+        Фикстура 'create_movie' создает фильм, возвращает ID.
+        Этот тест сам удаляет фильм и проверяет его недоступность.
         """
 
         movie_id_to_delete = create_movie  # ID фильма из фикстуры
 
-        headers = {"Authorization": f"Bearer {super_admin_token}"}
-
-        response = api_manager.movies_api.delete_movie(
+        response = super_admin.api.movies_api.delete_movie(
             movie_id=movie_id_to_delete,
-            headers=headers,
             expected_status=200
         )
 
         assert response.status_code == 200, f"Ожидался статус 200, получен {response.status_code}"
 
-    def test_delete_movie_check_get_fails(self, api_manager: ApiManager, create_movie, super_admin_token):
-
-        """
-        Проверка, что фильм больше не доступен через GET /movies/{id} после удаления.
-        Фикстура 'create_movie' создает фильм, возвращает ID и удаляет его в teardown.
-        Этот тест сам удаляет фильм и проверяет его недоступность.
-        """
-
-        movie_id_to_delete_and_check = create_movie
-        headers = {"Authorization": f"Bearer {super_admin_token}"}
-
-        api_manager.movies_api.delete_movie(
-            movie_id=movie_id_to_delete_and_check,
-            headers=headers,
-            expected_status=200
-        )
-
         # Получить удаленный фильм, ожидаем 404 Not Found
         with pytest.raises(ValueError) as ex:
-            api_manager.movies_api.get_movie_by_id(
-                movie_id=movie_id_to_delete_and_check
+            super_admin.api.movies_api.get_movie(
+                movie_id=movie_id_to_delete
             )
         assert "Unexpected status code: 404" in str(ex.value), \
             "Ожидалась ошибка ValueError со статусом 404 при попытке GET удаленного фильма."
