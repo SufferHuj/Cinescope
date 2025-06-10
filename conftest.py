@@ -54,7 +54,7 @@ def registered_user(api_manager, test_user):
     try:
         api_manager.user_api.clean_up_user(user_id=created_user["id"])
     except Exception as e:
-        print(f"Could not clean up user {created_user.get('id')}: {e}")
+        print(f"Не удалось очистить пользователя {created_user.get('id')}: {e}")
 
 @pytest.fixture(scope="session")
 def requester():
@@ -162,7 +162,7 @@ def common_user(user_session, super_admin, creation_user_data):
 def admin(user_session, super_admin, creation_user_data):
 
     """
-    Фикстура для создания юзера с ролью USER
+    Фикстура для создания юзера с ролью ADMIN
     """
 
     new_session = user_session
@@ -176,6 +176,14 @@ def admin(user_session, super_admin, creation_user_data):
     super_admin.api.user_api.create_user(creation_user_data)
     admin.api.auth_api.authenticate(admin.creds)
     return admin
+
+@pytest.fixture
+def general_user(request):
+
+    """
+    Фикстура для передачи ролей пользователей в тестовый метод
+    """
+    return request.getfixturevalue(request.param)
 
 # ФИКСТУРЫ ДЛЯ ТЕСТОВ MoviesAPI
 

@@ -1,18 +1,21 @@
 import pytest
 from api.api_manager import ApiManager
+from conftest import create_movie
 
 
 class TestMovieAPI:
 
     # Тесты для GET
 
-    def test_get_all_movies(self, api_manager: ApiManager):
+    def test_get_all_movies(self, common_user, movie_data):
 
         """
         Получение полного списка фильмов без фильтров.
         Проверка структуры ответа и базовых полей фильма.
         """
-        response = api_manager.movies_api.get_movies(expected_status=200)
+
+        response = common_user.api.movies_api.get_movies(movie_data)
+
         response_data = response.json()
 
         assert "movies" in response_data, "Ключ 'movies' отсутствует в ответе"
@@ -25,16 +28,27 @@ class TestMovieAPI:
             assert "genreId" in movie_item, "Поле 'genreId' отсутствует в элементе фильма"
 
 
-    def test_filter_movies_by_price(self, api_manager: ApiManager):
+    @pytest.mark.parametrize(
+    "min_price,max_price,location,genre_id", [
+            (1, 10, "MSK", 1),
+            (11, 99,"SPB", 2),
+            (100, 1000, "MSK", 3)],
+        ids=[1, 2, 3]
+    )
+    def test_filter_movies_by_price(self, common_user, min_price, max_price, location, genre_id):
 
         """
         Фильтрация фильмов по minPrice и maxPrice.
         """
 
-        min_price, max_price = 100, 1000
-        params = {"minPrice": min_price, "maxPrice": max_price}
+        params = {
+            "minPrice": min_price,
+            "maxPrice": max_price,
+            "locations": location,
+            "genreId": genre_id
+        }
 
-        response = api_manager.movies_api.get_movies(params=params, expected_status=200)
+        response = common_user.api.movies_api.get_movies(params=params, expected_status=200)
         response_data = response.json()
 
         assert "movies" in response_data
@@ -47,6 +61,18 @@ class TestMovieAPI:
                 f"Цена фильма {movie['price']} (ID: {movie.get('id')}) выходит за пределы диапазона [{min_price}, {max_price}]"
             assert "id" in movie
             assert "name" in movie
+
+    def test_get_one_movie_by_id(self, create_movie, common_user):
+
+        """
+        Успешное получение фильма по id для пользователя USER
+        """
+
+        response = common_user.api.movies_api.get_movie(create_movie)
+        response_data = response.json()
+
+        assert "id" in response_data, "ID отсутствует в ответе на создание фильма"
+        assert response_data["id"] == create_movie, "ID фильма отсутствует"
 
     # Тесты для POST
 
@@ -69,7 +95,7 @@ class TestMovieAPI:
         assert response_data["genreId"] == movie_data["genreId"], "ID жанра не совпадает"
 
     # НЕГАТИВНЫЙ ТЕСТ POST
-
+    @pytest.mark.negative
     def test_create_movie_with_invalid_user(self, movie_data, common_user):
 
         """
@@ -109,3 +135,14 @@ class TestMovieAPI:
             )
         assert "Unexpected status code: 404" in str(ex.value), \
             "Ожидалась ошибка ValueError со статусом 404 при попытке GET удаленного фильма."
+
+
+    @pytest.mark.parametrize('general_user,expected_code', [
+        ('super_admin', 200),
+        ('common_user', 403)],
+        indirect=['general_user'])
+    def test_users(self, general_user, create_movie, expected_code):
+        movie_id = create_movie
+        response = general_user.api.movies_api.delete_movie(movie_id, expected_status=expected_code)
+
+        assert response.status_code == expected_code
