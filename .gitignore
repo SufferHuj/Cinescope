@@ -1,8 +1,0 @@
-.idea/
-venv/
-.venv/
-__pycache__/
-*.pyc
-.pytest_cache/
-tests/ui/hw kwargs.py
-tests/ui/q_r.py
