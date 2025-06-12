@@ -1,12 +1,12 @@
 import pytest
 from api.api_manager import ApiManager
-from conftest import create_movie
+
 
 
 class TestMovieAPI:
 
     # Тесты для GET
-
+    @pytest.mark.slow
     def test_get_all_movies(self, common_user, movie_data):
 
         """
@@ -27,7 +27,7 @@ class TestMovieAPI:
             assert "price" in movie_item, "Поле 'price' отсутствует в элементе фильма"
             assert "genreId" in movie_item, "Поле 'genreId' отсутствует в элементе фильма"
 
-
+    @pytest.mark.slow
     @pytest.mark.parametrize(
     "min_price,max_price,location,genre_id", [
             (1, 10, "MSK", 1),
@@ -61,7 +61,7 @@ class TestMovieAPI:
                 f"Цена фильма {movie['price']} (ID: {movie.get('id')}) выходит за пределы диапазона [{min_price}, {max_price}]"
             assert "id" in movie
             assert "name" in movie
-
+    @pytest.mark.slow
     def test_get_one_movie_by_id(self, create_movie, common_user):
 
         """
@@ -95,6 +95,7 @@ class TestMovieAPI:
         assert response_data["genreId"] == movie_data["genreId"], "ID жанра не совпадает"
 
     # НЕГАТИВНЫЙ ТЕСТ POST
+    @pytest.mark.slow
     @pytest.mark.negative
     def test_create_movie_with_invalid_user(self, movie_data, common_user):
 
@@ -110,7 +111,7 @@ class TestMovieAPI:
         assert response.status_code == 403, f"Ожидался статус 403, получен {response.status_code}"
 
     # Тест для DELETE
-
+    @pytest.mark.slow
     def test_delete_movie_success(self, create_movie, super_admin):
 
         """
