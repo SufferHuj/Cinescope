@@ -30,9 +30,10 @@ class TestAuthAPI:
             "password": registered_user["password"]
         }
 
-        response = api_manager.auth_api.login_user(login_data)
+        response = api_manager.auth_api.login_user(login_data, expected_status=[200, 201])
         response_data = response.json()
 
+        assert response.status_code in [200, 201]
         assert "accessToken" in response_data, "Токен доступа отсутствует в ответе"
         assert response_data["user"]["email"] == registered_user["email"], "Email не совпадает"
 

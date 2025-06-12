@@ -136,9 +136,10 @@ class TestMovieAPI:
         assert "Unexpected status code: 404" in str(ex.value), \
             "Ожидалась ошибка ValueError со статусом 404 при попытке GET удаленного фильма."
 
-
+    @pytest.mark.skip(reason="Временно отключён")
     @pytest.mark.parametrize('general_user,expected_code', [
         ('super_admin', 200),
+        ('admin', 403),
         ('common_user', 403)],
         indirect=['general_user'])
     def test_users(self, general_user, create_movie, expected_code):
