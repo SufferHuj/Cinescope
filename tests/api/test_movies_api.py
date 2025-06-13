@@ -2,7 +2,6 @@ import pytest
 from api.api_manager import ApiManager
 
 
-
 class TestMovieAPI:
 
     # Тесты для GET
@@ -137,7 +136,8 @@ class TestMovieAPI:
         assert "Unexpected status code: 404" in str(ex.value), \
             "Ожидалась ошибка ValueError со статусом 404 при попытке GET удаленного фильма."
 
-    @pytest.mark.skip(reason="Временно отключён")
+    @pytest.mark.slow
+    @pytest.mark.negative
     @pytest.mark.parametrize('general_user,expected_code', [
         ('super_admin', 200),
         ('admin', 403),

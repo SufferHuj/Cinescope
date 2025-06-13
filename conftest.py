@@ -102,10 +102,11 @@ def user_session():
         user_pool.append(user_session)
         return user_session
 
-    yield _create_user_session()
+    yield _create_user_session
 
     for user in user_pool:
         user.close_session()
+
 
 @pytest.fixture
 def super_admin(user_session):
@@ -114,7 +115,7 @@ def super_admin(user_session):
     Фикстура на создание пользователя с ролью SUPER_ADMIN
     """
 
-    new_session = user_session
+    new_session = user_session()
 
     super_admin = User(
         SuperAdminCreds.USERNAME,
@@ -146,7 +147,7 @@ def common_user(user_session, super_admin, creation_user_data):
     Фикстура для создания юзера с ролью USER
     """
 
-    new_session = user_session
+    new_session = user_session()
 
     common_user = User(
         creation_user_data['email'],
@@ -165,7 +166,7 @@ def admin(user_session, super_admin, creation_user_data):
     Фикстура для создания юзера с ролью ADMIN
     """
 
-    new_session = user_session
+    new_session = user_session()
 
     admin = User(
         creation_user_data['email'],

@@ -10,7 +10,7 @@ class User:
         self.roles = roles
         self.api = api_manager
 
-    @property
+    @property #декоратор @property делает метод creds доступным как атрибут
     def creds(self):
 
         """
