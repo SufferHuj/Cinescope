@@ -5,7 +5,6 @@ from constants import BASE_URL, HEADERS
 
 
 class CustomRequester:
-
     """
     Инициализация кастомного реквестера
     :param session: Объект requests.Session
@@ -23,7 +22,8 @@ class CustomRequester:
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.INFO)
 
-    def send_request(self, method, endpoint, data=None, params=None, headers=None, expected_status=200, need_logging=True):
+    def send_request(self, method, endpoint, data=None, params=None, headers=None, expected_status=200,
+                     need_logging=True):
         """
         Универсальный метод для отправки запросов.
         :param method: HTTP метод (GET, POST, PUT, DELETE и т.д.).
