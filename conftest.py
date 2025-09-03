@@ -217,8 +217,6 @@ def movie_data():
 def create_movie(super_admin, movie_data):
     """
     Фикстура для создания фильма и возврата его ID.
-    Обеспечивает очистку (удаление) созданного фильма после теста.
-    Имя фикстуры 'create_movie' соответствует использованию в примере теста на удаление.
     """
 
     response = super_admin.api.movies_api.create_movie(
@@ -244,4 +242,18 @@ def genre_data() -> dict[str, str]:
 
     return {
         "name": f"Тестовый жанр - {global_faker.word()}{global_faker.random_number(digits=4)}",
+    }
+
+
+# ФИКСТУРЫ ДЛЯ ТЕСТОВ ReviewsAPI
+
+@pytest.fixture(scope="function")
+def review_data():
+    """
+    Фикстура для генерации валидных данных отзыва
+    """
+
+    return {
+        "rating": random.randint(1, 5),
+        "text": f"Тестовый отзыв - {global_faker.text(max_nb_chars=100)}"
     }

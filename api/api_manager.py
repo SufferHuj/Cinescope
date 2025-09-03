@@ -2,6 +2,7 @@ from api.auth_api import AuthAPI
 from api.user_api import UserAPI
 from api.movies_api import MoviesAPI
 from api.genres_api import GenresAPI
+from api.reviews_api import ReviewsAPI
 
 
 class ApiManager:
@@ -20,6 +21,7 @@ class ApiManager:
         self.user_api = UserAPI(session)
         self.movies_api = MoviesAPI(session)
         self.genres_api = GenresAPI(session)
+        self.reviews_api = ReviewsAPI(session)
 
     def close_session(self):
         self.session.close()
