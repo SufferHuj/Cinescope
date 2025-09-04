@@ -5,6 +5,7 @@ import random
 from api.api_manager import ApiManager
 from constants import BASE_URL
 from custom_requester.custom_requester import CustomRequester
+from resources.test_card_data import TestCardData
 from utils.data_generator import DataGenerator
 from entities.user import User
 from resources.user_creds import SuperAdminCreds
@@ -256,4 +257,16 @@ def review_data():
     return {
         "rating": random.randint(1, 5),
         "text": f"Тестовый отзыв - {global_faker.text(max_nb_chars=100)}"
+    }
+
+
+@pytest.fixture(scope='function')
+def payment_request_data(create_movie):
+    """
+    Фикстура для генерации данных для создания платежа
+    """
+    return {
+        "movieId": create_movie,
+        "amount": global_faker.random_int(min=100, max=10000),
+        "card": TestCardData.CARD_DATA
     }
