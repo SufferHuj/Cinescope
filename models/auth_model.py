@@ -4,7 +4,7 @@ from typing import Optional
 
 
 class TestUserData(BaseModel):
-    email: str = Field(pattern="@") # либо EmailStr для лучшей валидации
+    email: str = Field(pattern="@")  # либо EmailStr для лучшей валидации
     fullName: str
     password: str = Field(min_length=8)
     passwordRepeat: str = Field(min_length=8)

@@ -50,11 +50,11 @@ class CustomRequester:
         if isinstance(expected_status, (list, tuple)):
             if response.status_code not in expected_status:
                 raise ValueError(
-                    f"Unexpected status code: {response.status_code}. Expected one of: {expected_status}"
+                    f"Неожиданный код статуса: {response.status_code}. Ожидаемый: {expected_status}"
                 )
         elif isinstance(expected_status, int):
             if response.status_code != expected_status:
-                raise ValueError(f"Unexpected status code: {response.status_code}. Expected: {expected_status}")
+                raise ValueError(f"Неожиданный код статуса: {response.status_code}. Ожидаемый: {expected_status}")
 
         return response
 
