@@ -116,9 +116,16 @@ def super_admin(user_session):
 
     new_session = user_session()
 
+    # Проверяем, что переменные окружения установлены
+    username = SuperAdminCreds.USERNAME
+    password = SuperAdminCreds.PASSWORD
+    
+    if username is None or password is None:
+        raise ValueError("SUPER_ADMIN_USERNAME и SUPER_ADMIN_PASSWORD должны быть установлены в переменных окружения")
+
     super_admin = User(
-        SuperAdminCreds.USERNAME,
-        SuperAdminCreds.PASSWORD,
+        username,
+        password,
         [Roles.SUPER_ADMIN.value],
         new_session)
 
