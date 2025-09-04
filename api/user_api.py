@@ -3,19 +3,15 @@ from constants import BASE_URL
 
 
 class UserAPI(CustomRequester):
-
     """
     Класс для работы с API пользователей.
     """
-
 
     def __init__(self, session):
 
         super().__init__(session=session, base_url=BASE_URL)
 
-
-    def get_user(self, user_id, expected_status = 200):
-
+    def get_user(self, user_id, expected_status=200):
         """
         Получение информации о пользователе
         :param expected_status: Ожидаемый статус-код.
@@ -23,13 +19,38 @@ class UserAPI(CustomRequester):
         """
 
         return self.send_request(
-            method= "GET",
-            endpoint= f"/user/{user_id}",
-            expected_status= expected_status
+            method="GET",
+            endpoint=f"/user/{user_id}",
+            expected_status=expected_status
+        )
+
+    def get_users(self, page_size=None, page=None, roles=None, created_at=None, expected_status=200):
+        """
+        Получение списка пользователей
+        :param page_size: Размер страницы
+        :param page: Номер страницы
+        :param roles: Роли
+        :param created_at: Сортировка по дате создания
+        :param expected_status: Ожидаемый статус-код
+        """
+        params = {}
+        if page_size is not None:
+            params['pageSize'] = page_size
+        if page is not None:
+            params['page'] = page
+        if roles is not None:
+            params['roles'] = roles
+        if created_at is not None:
+            params['createdAt'] = created_at
+
+        return self.send_request(
+            method="GET",
+            endpoint="/user",
+            params=params,
+            expected_status=expected_status
         )
 
     def create_user(self, user_data, expected_status=201):
-
         """
         Создание пользователя
         """
@@ -41,8 +62,16 @@ class UserAPI(CustomRequester):
             expected_status=expected_status
         )
 
-    def delete_user(self, user_id, expected_status = 204):
+    def patch_user(self, user_id, user_data, expected_status=200):
 
+        return self.send_request(
+            method="PATCH",
+            endpoint=f"/user/{user_id}",
+            data=user_data,
+            expected_status=expected_status
+        )
+
+    def delete_user(self, user_id, expected_status=204):
         """
         Удаление пользователя.
         :param user_id: ID пользователя.
@@ -56,7 +85,6 @@ class UserAPI(CustomRequester):
         )
 
     def clean_up_user(self, user_id):
-
         """
         Метод для очистки (удаления) пользователя после теста.
         Использует метод delete_user.
@@ -78,4 +106,4 @@ class UserAPI(CustomRequester):
                       f"Пропускаем.")
             else:
                 print(f"Ошибка при очистке пользователя для идентификатора {user_id}: {error}")
-                raise # Перевыбрасываем другие неожиданные ошибки
+                raise  # Перевыбрасываем другие неожиданные ошибки

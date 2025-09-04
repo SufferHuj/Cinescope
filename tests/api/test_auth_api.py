@@ -5,10 +5,8 @@ from api.api_manager import ApiManager
 class TestAuthAPI:
 
     def test_register_user(self, api_manager: ApiManager, test_user):
-
         """
         Тест на регистрацию пользователя.
-
         """
         response = api_manager.auth_api.register_user(test_user)
         response_data = response.json()
@@ -18,9 +16,7 @@ class TestAuthAPI:
         assert "roles" in response_data, "Роли пользователя отсутствуют в ответе"
         assert "USER" in response_data["roles"], "Роль USER должна быть у пользователя"
 
-
     def test_register_and_login_user(self, api_manager: ApiManager, registered_user):
-
         """
         Тест на регистрацию и авторизацию пользователя.
         """
@@ -41,7 +37,6 @@ class TestAuthAPI:
 
     @pytest.mark.negative
     def test_login_with_invalid_password(self, api_manager: ApiManager, registered_user):
-
         """
         Проверка авторизации с невалидным паролем.
         """
@@ -57,12 +52,10 @@ class TestAuthAPI:
         assert "error" in response_data, "Сообщение об ошибке отсутствует в ответе"
         assert "Unauthorized" in response_data.get("error", ""), "Сообщение об ошибке некорректное"
 
-
     @pytest.mark.negative
     def test_login_with_invalid_login(self, api_manager: ApiManager, registered_user):
-
         """
-        проверка авторизации с несуществующим email
+        Проверка авторизации с несуществующим email
         """
 
         login_data = {
@@ -78,9 +71,8 @@ class TestAuthAPI:
 
     @pytest.mark.negative
     def test_login_without_body(self, api_manager: ApiManager, registered_user):
-
         """
-        проверка авторизации с пустым телом запроса
+        Проверка авторизации с пустым телом запроса
         """
 
         login_data = {}

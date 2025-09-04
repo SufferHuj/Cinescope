@@ -1,7 +1,9 @@
 import random
 import string
 from faker import Faker
+
 faker = Faker()
+
 
 class DataGenerator:
 
@@ -16,7 +18,6 @@ class DataGenerator:
 
     @staticmethod
     def generation_random_password():
-
         """
         Генерация пароля, соответствующего требованиям:
         - Минимум 1 буква.
@@ -26,15 +27,15 @@ class DataGenerator:
         """
 
         # Гарантируем наличие хотя бы одной буквы и одной цифры
-        letters = random.choice(string.ascii_lowercase) # одна буква
-        digits = random.choice(string.digits) # одна цифра
+        letters = random.choice(string.ascii_lowercase)  # одна буква
+        digits = random.choice(string.digits)  # одна цифра
 
         # Дополняем пароль случайными символами из допустимого набора
         special_chars = "?@#$%^&*|:"
 
         all_chars = string.ascii_letters + string.digits + special_chars
 
-        remaining_length = random.randint(6, 18) # остальная длина пароля
+        remaining_length = random.randint(6, 18)  # остальная длина пароля
         remaining_chars = ''.join(random.choices(all_chars, k=remaining_length))
 
         # Перемешиваем пароль для рандомизации
