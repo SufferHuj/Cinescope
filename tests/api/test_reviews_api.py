@@ -10,6 +10,7 @@ class TestReviewsAPI:
         """
         Успешное получение отзывов фильма(PUBLIC).
         """
+
         movie_id = create_movie
 
         response = api_manager.reviews_api.get_movie_reviews(
@@ -26,8 +27,8 @@ class TestReviewsAPI:
         """
         Успешное создание отзыва авторизованным пользователем.
         Роли: USER, ADMIN, SUPER_ADMIN
-        Статус-код: 201
         """
+
         movie_id = create_movie
 
         response = common_user.api.reviews_api.create_review(
@@ -51,6 +52,7 @@ class TestReviewsAPI:
         Успешное редактирование отзыва.
         Роли: USER, ADMIN, SUPER_ADMIN
         """
+
         movie_id = create_movie
 
         # Сначала создаем отзыв
@@ -85,6 +87,7 @@ class TestReviewsAPI:
         """
         Успешное скрытие отзыва. Роли: ADMIN, SUPER_ADMIN
         """
+
         movie_id = create_movie
 
         # Создаем пользователя и отзыв
@@ -112,6 +115,7 @@ class TestReviewsAPI:
         """
         Успешный показ отзыва. Роли: ADMIN, SUPER_ADMIN
         """
+
         movie_id = create_movie
 
         # Создаем пользователя и отзыв
@@ -140,6 +144,7 @@ class TestReviewsAPI:
         """
         Получение отзывов для несуществующего фильма.
         """
+
         nonexistent_movie_id = global_faker.random_number(digits=6, fix_len=True)
 
         response = api_manager.reviews_api.get_movie_reviews(
@@ -155,6 +160,7 @@ class TestReviewsAPI:
         """
         Создание отзыва неавторизованным пользователем.
         """
+
         movie_id = create_movie
 
         response = api_manager.reviews_api.create_review(
@@ -170,6 +176,7 @@ class TestReviewsAPI:
         """
         Создание отзыва для несуществующего фильма.
         """
+
         fake_movie_id = global_faker.random_number(digits=6, fix_len=True)
 
         response = common_user.api.reviews_api.create_review(
@@ -185,6 +192,7 @@ class TestReviewsAPI:
         """
         Создание отзыва с некорректными данными.
         """
+
         movie_id = create_movie
         invalid_review_data = {
             "reviewText": "",  # Пустой текст отзыва
@@ -203,8 +211,8 @@ class TestReviewsAPI:
     def test_create_review_conflict(self, common_user, create_movie, review_data):
         """
         Попытка создания дублирующего отзыва.
-        Статус-код: 409 - Вы уже оставили отзыв к этому фильму или 404 (если API не реализован)
         """
+
         movie_id = create_movie
 
         # Создаем первый отзыв
@@ -231,6 +239,7 @@ class TestReviewsAPI:
         """
         Редактирование отзыва неавторизованным пользователем.
         """
+
         movie_id = create_movie
 
         response = api_manager.reviews_api.update_review(
@@ -246,6 +255,7 @@ class TestReviewsAPI:
         """
         Редактирование отзыва для несуществующего фильма.
         """
+        
         nonexistent_movie_id = global_faker.random_number(digits=6, fix_len=True)
 
         response = common_user.api.reviews_api.update_review(

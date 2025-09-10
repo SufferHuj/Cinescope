@@ -58,7 +58,6 @@ class TestUser:
         assert 'pageSize' in response, "В ответе должен быть ключ 'pageSize'"
 
     # НЕГАТИВНЫЙ ТЕСТ
-
     @pytest.mark.negative
     def test_get_user_by_id_common_user(self, common_user):
         """

@@ -8,6 +8,7 @@ class TestAuthAPI:
         """
         Тест на регистрацию пользователя.
         """
+
         response = api_manager.auth_api.register_user(test_user)
         response_data = response.json()
 

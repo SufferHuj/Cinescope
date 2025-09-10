@@ -179,7 +179,7 @@ def admin(user_session, super_admin, creation_user_data):
     user_id = created_user["id"]
 
     # Присваиваем пользователю роль ADMIN
-    patch_data = {"roles": [Roles.ADMIN.value, Roles.SUPER_ADMIN.value]}
+    patch_data = {"roles": [Roles.ADMIN.value]}
     super_admin.api.user_api.patch_user(user_id, patch_data)
 
     admin_user = User(
