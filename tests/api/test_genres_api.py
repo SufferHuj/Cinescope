@@ -83,7 +83,7 @@ class TestGenresAPI:
         # Проверяем, что жанр действительно удален
         with pytest.raises(ValueError) as ex:
             super_admin.api.genres_api.get_genres_by_id(genre_id)
-        assert "Unexpected status code: 404" in str(
+        assert "Неожиданный код статуса: 404" in str(
             ex.value), "Ожидалась ошибка 404 при попытке получить удаленный жанр"
 
     # ТЕСТЫ ДЛЯ GET /genres/{id}
