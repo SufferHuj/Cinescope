@@ -1,5 +1,6 @@
 import random
 import string
+import uuid
 from faker import Faker
 
 faker = Faker()
@@ -43,3 +44,10 @@ class DataGenerator:
         random.shuffle(password)
 
         return ''.join(password)
+
+    @staticmethod
+    def generation_random_uuid():
+        """
+        Генерация случайного UUID
+        """
+        return str(uuid.uuid4())

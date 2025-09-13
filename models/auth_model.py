@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field, field_validator, field_serializer, ConfigDict
 from constants import Roles
-from typing import Optional, List
+from typing import Optional, List, Union
 import datetime
 
 
@@ -56,8 +56,8 @@ class LoginUserResponse(BaseModel):
 
 
 class ErrorResponse(BaseModel):
-    error: str = Field(description="Сообщение об ошибке")
-    message: Optional[str] = Field(default=None, description="Дополнительное сообщение об ошибке")
+    error: Optional[str] = Field(default=None, description="Сообщение об ошибке")
+    message: Optional[Union[str, List[str]]] = Field(default=None, description="Дополнительное сообщение об ошибке")
     statusCode: Optional[int] = Field(default=None, description="HTTP статус код")
 
     model_config = ConfigDict(arbitrary_types_allowed=True)

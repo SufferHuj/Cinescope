@@ -1,6 +1,7 @@
 import pytest
 from api.api_manager import ApiManager
 from models.auth_model import RegisterUserResponse, LoginUserResponse, ErrorResponse
+from utils.data_generator import DataGenerator
 
 
 class TestAuthAPI:
@@ -49,7 +50,7 @@ class TestAuthAPI:
 
         login_data = {
             "email": registered_user["email"],
-            "password": "WrongPassword123!"
+            "password": DataGenerator.generation_random_password()
         }
 
         response = api_manager.auth_api.login_user(login_data, expected_status=401)
@@ -66,7 +67,7 @@ class TestAuthAPI:
         """
 
         login_data = {
-            "email": "test@gmail.com",
+            "email": DataGenerator.generation_random_email(),
             "password": registered_user["password"]
         }
 
