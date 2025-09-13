@@ -17,3 +17,9 @@ HEADERS = {
 
 LOGIN_ENDPOINT = "/login"
 REGISTER_ENDPOINT = "/register"
+
+# Константы для цветов в логах
+RED = '\033[31m'
+GREEN = '\033[32m'
+PURPLE = '\033[35m'
+RESET = '\033[0m'

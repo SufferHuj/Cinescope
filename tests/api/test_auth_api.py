@@ -1,5 +1,6 @@
 import pytest
 from api.api_manager import ApiManager
+from models.auth_model import RegisterUserResponse, LoginUserResponse, ErrorResponse
 
 
 class TestAuthAPI:
@@ -10,12 +11,13 @@ class TestAuthAPI:
         """
 
         response = api_manager.auth_api.register_user(test_user)
-        response_data = response.json()
+        response_data = RegisterUserResponse(**response.json())
 
-        assert response_data["email"] == test_user["email"], "Email не совпадает"
-        assert "id" in response_data, "ID пользователя отсутствует в ответе"
-        assert "roles" in response_data, "Роли пользователя отсутствуют в ответе"
-        assert "USER" in response_data["roles"], "Роль USER должна быть у пользователя"
+        assert response_data.email == test_user.email, "Email не совпадает"
+        assert response_data.fullName == test_user.fullName, "Имя не совпадает"
+        assert response_data.roles == test_user.roles, "Роли не совпадают"
+        assert response_data.verified is not None, "Статус верификации отсутствует в ответе"
+        assert response_data.createdAt is not None, "Дата создания пользователя отсутствует в ответе"
 
     def test_register_and_login_user(self, api_manager: ApiManager, registered_user):
         """
@@ -27,12 +29,15 @@ class TestAuthAPI:
             "password": registered_user["password"]
         }
 
-        response = api_manager.auth_api.login_user(login_data, expected_status=[200, 201])
-        response_data = response.json()
+        response = api_manager.auth_api.login_user(login_data, expected_status=201)
+        response_data = LoginUserResponse(**response.json())
 
-        assert response.status_code in [200, 201]
-        assert "accessToken" in response_data, "Токен доступа отсутствует в ответе"
-        assert response_data["user"]["email"] == registered_user["email"], "Email не совпадает"
+        assert response.status_code == 201
+        assert response_data.user.email == registered_user["email"], "Email не совпадает"
+        assert response_data.user.fullName == registered_user["fullName"], "Имя не совпадает"
+        assert response_data.user.roles == registered_user["roles"], "Роли не совпадают"
+        assert response_data.accessToken is not None, "Токен доступа отсутствует в ответе"
+        assert response_data.refreshToken is not None, "Токен обновления отсутствует в ответе"
 
     # НЕГАТИВНЫЕ ПРОВЕРКИ
 
@@ -48,10 +53,11 @@ class TestAuthAPI:
         }
 
         response = api_manager.auth_api.login_user(login_data, expected_status=401)
-        response_data = response.json()
+        error_data = ErrorResponse(**response.json())
 
-        assert "error" in response_data, "Сообщение об ошибке отсутствует в ответе"
-        assert "Unauthorized" in response_data.get("error", ""), "Сообщение об ошибке некорректное"
+        assert response.status_code == 401
+        assert error_data.error is not None, "Сообщение об ошибке отсутствует в ответе"
+        assert "Unauthorized" in error_data.error, "Сообщение об ошибке некорректное"
 
     @pytest.mark.negative
     def test_login_with_invalid_login(self, api_manager: ApiManager, registered_user):
@@ -65,10 +71,11 @@ class TestAuthAPI:
         }
 
         response = api_manager.auth_api.login_user(login_data, expected_status=401)
-        response_data = response.json()
+        error_data = ErrorResponse(**response.json())
 
-        assert "error" in response_data, "Сообщение об ошибке отсутствует в ответе"
-        assert "Unauthorized" in response_data.get("error", ""), "Сообщение об ошибке некорректное"
+        assert response.status_code == 401
+        assert error_data.error is not None, "Сообщение об ошибке отсутствует в ответе"
+        assert "Unauthorized" in error_data.error, "Сообщение об ошибке некорректное"
 
     @pytest.mark.negative
     def test_login_without_body(self, api_manager: ApiManager, registered_user):
@@ -79,7 +86,8 @@ class TestAuthAPI:
         login_data = {}
 
         response = api_manager.auth_api.login_user(login_data, expected_status=401)
-        response_data = response.json()
+        error_data = ErrorResponse(**response.json())
 
-        assert "error" in response_data, "Сообщение об ошибке отсутствует в ответе"
-        assert "Unauthorized" in response_data.get("error", ""), "Сообщение об ошибке некорректное"
+        assert response.status_code == 401
+        assert error_data.error is not None, "Сообщение об ошибке отсутствует в ответе"
+        assert "Unauthorized" in error_data.error, "Сообщение об ошибке некорректное"

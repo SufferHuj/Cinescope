@@ -71,18 +71,29 @@ class UserAPI(CustomRequester):
             expected_status=expected_status
         )
 
-    def delete_user(self, user_id, expected_status=204):
+    def delete_user(self, user_id, expected_status=200):
         """
         Удаление пользователя.
         :param user_id: ID пользователя.
         :param expected_status: Ожидаемый статус-код.
         """
-
-        return self.send_request(
-            method="DELETE",
-            endpoint=f"/users/{user_id}",
-            expected_status=expected_status
-        )
+        # Сохраняем текущие Cookie
+        original_cookies = self.session.cookies.copy()
+        
+        # Очищаем Cookie для DELETE запроса
+        self.session.cookies.clear()
+        
+        try:
+            response = self.send_request(
+                method="DELETE",
+                endpoint=f"/user/{user_id}",
+                expected_status=expected_status
+            )
+        finally:
+            # Восстанавливаем Cookie после запроса
+            self.session.cookies.update(original_cookies)
+            
+        return response
 
     def clean_up_user(self, user_id):
         """
@@ -91,19 +102,15 @@ class UserAPI(CustomRequester):
         :param user_id: ID пользователя, которого нужно удалить.
         """
 
-        # Мы ожидаем статус 204 при успешном удалении.
-        # Этот метод не должен выбрасывать ошибку, если пользователь уже не существует (например, 404),
-        # так как это "очистка". Можно обработать это условие.
+
         try:
-            self.delete_user(user_id=user_id, expected_status=204)
+            self.delete_user(user_id=user_id, expected_status=200)
 
         except ValueError as error:
-            # Если статус не 204, но это, например, 404 (Not Found),
-            # это может означать, что пользователь уже был удален, и это приемлемо для очистки.
-            # Если это другая ошибка, например, 500, то можно ее перевыбросить или залогировать.
+
             if "Unexpected status code: 404" in str(error):
-                print(f"Пользователь с идентификатором {user_id} не найден во время очистки (возможно, он уже удален). "
-                      f"Пропускаем.")
+                print(f"User with ID {user_id} not found during cleanup (possibly already deleted). "
+                      f"Skipping.")
             else:
-                print(f"Ошибка при очистке пользователя для идентификатора {user_id}: {error}")
+                print(f"Error during user cleanup for ID {user_id}: {error}")
                 raise  # Перевыбрасываем другие неожиданные ошибки

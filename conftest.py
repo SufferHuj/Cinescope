@@ -10,6 +10,7 @@ from utils.data_generator import DataGenerator
 from entities.user import User
 from resources.user_creds import SuperAdminCreds
 from constants import Roles
+from models.auth_model import TestUserData
 from utils.data_generator import faker as global_faker
 
 
@@ -19,42 +20,47 @@ def test_user():
     Генерация случайного пользователя для тестов.
     """
 
-    random_email = DataGenerator.generation_random_email()
-    random_name = DataGenerator.generation_random_name()
+
     random_password = DataGenerator.generation_random_password()
 
-    return {
-        "email": random_email,
-        "fullName": random_name,
-        "password": random_password,
-        "passwordRepeat": random_password,
-        "roles": [Roles.USER.value]
-    }
+    return TestUserData(
+        email=DataGenerator.generation_random_email(),
+        fullName=DataGenerator.generation_random_name(),
+        password=random_password,
+        passwordRepeat=random_password,
+        roles=[Roles.USER]  # Изменено с Roles.USER.value на Roles.USER
+    )
 
 
 @pytest.fixture(scope="function")
-def registered_user(api_manager, test_user):
+def registered_user(api_manager, test_user: TestUserData):
     """
     Фикстура для регистрации и получения данных зарегистрированного пользователя.
     Обеспечивает очистку созданного пользователя после завершения теста.
+    Пользователь удаляет сам себя согласно API документации.
     """
 
+    # Регистрируем нового пользователя через API
     response = api_manager.auth_api.register_user(user_data=test_user, expected_status=201)
     response_data = response.json()
 
-    # Обновлён test_user данными из ответа, особенно ID
-    created_user = test_user.copy()
+    # Преобразуем Pydantic модель в словарь для удобства работы
+    created_user = test_user.model_dump()
+    # Добавляем ID пользователя, полученный от API после регистрации
     created_user["id"] = response_data["id"]
 
-    # Сохранён пароль, так как он не возвращается в ответе регистрации, но нужен для логина
-    created_user["password_plain"] = test_user["password"]
+    # Сохраняем пароль в открытом виде для возможной авторизации
+    created_user["password_plain"] = test_user.password
 
     yield created_user
 
     try:
+        # Авторизуемся под созданным пользователем для удаления
+        api_manager.auth_api.authenticate((test_user.email, test_user.password))
+        # Пользователь удаляет сам себя
         api_manager.user_api.clean_up_user(user_id=created_user["id"])
     except Exception as e:
-        print(f"Не удалось очистить пользователя {created_user.get('id')}: {e}")
+        print(f"Failed to clean up user {created_user.get('id')}: {e}")
 
 
 @pytest.fixture(scope="session")
@@ -133,12 +139,12 @@ def super_admin(user_session):
 
 
 @pytest.fixture(scope="function")
-def creation_user_data(test_user):
+def creation_user_data(test_user: TestUserData):
     """
     Фикстура для создания общего юзера
     """
 
-    updated_data = test_user.copy()
+    updated_data = test_user.model_dump()
     updated_data.update({
         "verified": True,
         "banned": False

@@ -109,7 +109,7 @@ class TestMovieAPI:
             super_admin.api.movies_api.get_movie(
                 movie_id=movie_id_to_delete
             )
-        assert "Неожиданный код статуса: 404" in str(ex.value), \
+        assert "Unexpected status code: 404" in str(ex.value), \
             "Ожидалась ошибка ValueError со статусом 404 при попытке GET удаленного фильма."
 
     # НЕГАТИВНЫЕ ТЕСТЫ
