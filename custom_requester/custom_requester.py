@@ -48,7 +48,7 @@ class CustomRequester:
             
         # Проверяем, является ли data моделью Pydantic
         if isinstance(data, BaseModel):
-            data = json.loads(data.model_dump_json(exclude_unset=True))
+            data = data.model_dump(exclude_unset=True)  
             
         response = self.session.request(method, url, json=data, params=params, headers=request_headers)
 
