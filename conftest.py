@@ -14,6 +14,8 @@ from models.auth_model import TestUserData
 from utils.data_generator import faker as global_faker
 
 
+# ФИКСТУРЫ ДЛЯ ТЕСТОВ AuthAPI и UserAPI
+
 @pytest.fixture(scope='function')
 def test_user():
     """
@@ -207,6 +209,7 @@ def general_user(request):
 
 
 # ФИКСТУРЫ ДЛЯ ТЕСТОВ MoviesAPI
+
 @pytest.fixture(scope='function')
 def movie_data():
     """
