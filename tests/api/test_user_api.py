@@ -5,6 +5,12 @@ from utils.data_generator import DataGenerator
 
 
 class TestUser:
+    """
+    Класс тестов для API пользователей.
+    
+    Включает тесты для всех CRUD операций с пользователями,
+    управления ролями и проверки прав доступа.
+    """
 
     def test_create_user(self, super_admin, creation_user_data):
         """

@@ -8,6 +8,10 @@ class AuthAPI(CustomRequester):
     """
 
     def __init__(self, session):
+        """
+        Инициализация AuthAPI.
+        :param session: HTTP-сессия для выполнения запросов.
+        """
         super().__init__(session=session, base_url=BASE_URL)
 
     def register_user(self, user_data, expected_status=201):
@@ -37,6 +41,10 @@ class AuthAPI(CustomRequester):
         )
 
     def authenticate(self, user_creds):
+        """
+        Аутентификация пользователя и установка токена в заголовки сессии.
+        :param user_creds: Кортеж с данными пользователя (email, password).
+        """
         login_data = {
             "email": user_creds[0],
             "password": user_creds[1]

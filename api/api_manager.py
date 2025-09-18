@@ -26,4 +26,7 @@ class ApiManager:
         self.payment_api = PaymentAPI(session)
 
     def close_session(self):
+        """
+        Закрывает HTTP-сессию для освобождения ресурсов.
+        """
         self.session.close()

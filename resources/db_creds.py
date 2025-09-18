@@ -5,8 +5,14 @@ load_dotenv()
 
 
 class MoviesDbCreds:
-    HOST = os.getenv('DB_MOVIES_HOST')
-    PORT = os.getenv('DB_MOVIES_PORT')
-    DATABASE_NAME = os.getenv('DB_MOVIES_NAME')
-    USERNAME = os.getenv('DB_MOVIES_USERNAME')
-    PASSWORD = os.getenv('DB_MOVIES_PASSWORD')
+    """
+    Учетные данные для подключения к базе данных фильмов.
+    
+    Получает параметры подключения к БД из переменных окружения
+    для безопасного подключения в тестах и приложении.
+    """
+    HOST = os.getenv('DB_MOVIES_HOST')  # Хост базы данных
+    PORT = os.getenv('DB_MOVIES_PORT')  # Порт базы данных
+    DATABASE_NAME = os.getenv('DB_MOVIES_NAME')  # Имя базы данных
+    USERNAME = os.getenv('DB_MOVIES_USERNAME')  # Имя пользователя БД
+    PASSWORD = os.getenv('DB_MOVIES_PASSWORD')  # Пароль пользователя БД

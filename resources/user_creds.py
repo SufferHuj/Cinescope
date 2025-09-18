@@ -5,5 +5,11 @@ load_dotenv()
 
 
 class SuperAdminCreds:
-    USERNAME = os.getenv("SUPER_ADMIN_USERNAME")
-    PASSWORD = os.getenv("SUPER_ADMIN_PASSWORD")
+    """
+    Учетные данные суперадминистратора для тестирования.
+    
+    Получает логин и пароль суперадминистратора из переменных окружения
+    для использования в автоматизированных тестах с повышенными правами.
+    """
+    USERNAME = os.getenv("SUPER_ADMIN_USERNAME")  # Имя пользователя суперадминистратора
+    PASSWORD = os.getenv("SUPER_ADMIN_PASSWORD")  # Пароль суперадминистратора

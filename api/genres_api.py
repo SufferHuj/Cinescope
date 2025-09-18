@@ -8,6 +8,10 @@ class GenresAPI(CustomRequester):
     """
 
     def __init__(self, session):
+        """
+        Инициализация GenresAPI.
+        :param session: HTTP-сессия для выполнения запросов.
+        """
         super().__init__(session=session, base_url=MOVIES_API_BASE_URL)
 
     def get_genres(self, expected_status=200):
@@ -24,7 +28,8 @@ class GenresAPI(CustomRequester):
 
     def get_genres_by_id(self, genre_id, expected_status=200):
         """
-        Получение жанра по id
+        Получение жанра по ID.
+        :param genre_id: Идентификатор жанра.
         """
 
         return self.send_request(
@@ -37,7 +42,6 @@ class GenresAPI(CustomRequester):
         """
         Создание нового жанра. Требуется токен авторизации с ролью SUPER_ADMIN.
         :param genre_data: Данные нового жанра (словарь с полем 'name').
-        :param expected_status: 201
         """
 
         return self.send_request(
@@ -49,7 +53,8 @@ class GenresAPI(CustomRequester):
 
     def delete_genre_by_id(self, genre_id, expected_status=200):
         """
-        Удаление жанра по id
+        Удаление жанра по ID. Требуется токен авторизации с ролью SUPER_ADMIN.
+        :param genre_id: Идентификатор жанра для удаления.
         """
 
         return self.send_request(

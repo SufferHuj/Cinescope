@@ -8,13 +8,17 @@ class MoviesAPI(CustomRequester):
     """
 
     def __init__(self, session):
+        """
+        Инициализация MoviesAPI.
+        :param session: HTTP-сессия для выполнения запросов.
+        """
         super().__init__(session=session, base_url=MOVIES_API_BASE_URL)
 
     def get_movies(self, params=None, expected_status=200):
         """
         Получение списка фильмов. :param params: Параметры запроса (например, page, pageSize, minPrice, maxPrice,
-        locations, published, genreId, order, createdAt). :param expected_status: Ожидаемый статус-код. :return:
-        Объект ответа requests.Response.
+        locations, published, genreId, order, createdAt). :param expected_status: Ожидаемый статус-код. 
+        :return: Объект ответа requests.Response.
         """
 
         return self.send_request(
@@ -28,7 +32,6 @@ class MoviesAPI(CustomRequester):
         """
         Получение конкретного фильма по его ID.
         :param movie_id: ID фильма.
-        :param expected_status: Ожидаемый статус-код.
         :return: Объект ответа requests.Response.
         """
 
@@ -42,7 +45,6 @@ class MoviesAPI(CustomRequester):
         """
         Создание нового фильма. Требуется токен авторизации.
         :param movie_data: Данные нового фильма (словарь).
-        :param expected_status: Ожидаемый статус-код (по умолчанию 201).
         :return: Объект ответа requests.Response.
         """
 
@@ -57,7 +59,6 @@ class MoviesAPI(CustomRequester):
         """
         Удаление фильма по его ID. Требуется токен авторизации.
         :param movie_id: ID фильма.
-        :param expected_status: Ожидаемый статус-код (по умолчанию 200).
         :return: Объект ответа requests.Response.
         """
 

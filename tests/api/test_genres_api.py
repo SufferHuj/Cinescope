@@ -5,6 +5,12 @@ from api.api_manager import ApiManager
 
 
 class TestGenresAPI:
+    """
+    Класс тестов для API жанров.
+    
+    Включает тесты для всех CRUD операций с жанрами, проверки прав доступа
+    и валидации данных для различных ролей пользователей.
+    """
 
     # ТЕСТЫ ДЛЯ GET /genres
     def test_get_all_genres_success(self, api_manager: ApiManager):
