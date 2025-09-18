@@ -12,6 +12,8 @@ from resources.user_creds import SuperAdminCreds
 from constants import Roles
 from models.auth_model import TestUserData
 from utils.data_generator import faker as global_faker
+from sqlalchemy.orm import Session
+from db_requester.db_client import get_db_session
 
 
 # ФИКСТУРЫ ДЛЯ ТЕСТОВ AuthAPI и UserAPI
@@ -205,6 +207,7 @@ def general_user(request):
     """
     Фикстура для передачи ролей пользователей в тестовый метод
     """
+
     return request.getfixturevalue(request.param)
 
 
@@ -280,8 +283,22 @@ def payment_request_data(create_movie):
     """
     Фикстура для генерации данных для создания платежа
     """
+
     return {
         "movieId": create_movie,
         "amount": global_faker.random_int(min=100, max=10000),
         "card": TestCardData.CARD_DATA
     }
+
+# ФИКСТУРЫ ДЛЯ ТЕСТОВ БД 
+
+@pytest.fixture(scope="module")
+def db_session() -> Session:
+    """
+    Фикстура, которая создает и возвращает сессию для работы с базой данных
+    После завершения теста сессия автоматически закрывается
+    """
+
+    db_session = get_db_session()
+    yield db_session
+    db_session.close()
