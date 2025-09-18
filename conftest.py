@@ -277,6 +277,7 @@ def review_data():
         "text": f"Тестовый отзыв - {global_faker.text(max_nb_chars=100)}"
     }
 
+# ФИКСТУРЫ ДЛЯ ТЕСТОВ PaymentAPI
 
 @pytest.fixture(scope='function')
 def payment_request_data(create_movie):
