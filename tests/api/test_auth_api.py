@@ -5,6 +5,12 @@ from utils.data_generator import DataGenerator
 
 
 class TestAuthAPI:
+    """
+    Класс тестов для API аутентификации.
+    
+    Включает позитивные и негативные тесты для операций регистрации
+    и авторизации пользователей.
+    """
 
     def test_register_user(self, api_manager: ApiManager, test_user):
         """

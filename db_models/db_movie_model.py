@@ -6,6 +6,25 @@ Base = declarative_base()
 
 
 class MovieDBModel(Base):
+    """
+    Модель фильма в БД.
+    
+    Представляет таблицу movies в базе данных PostgreSQL.
+    Содержит все необходимые поля для хранения информации о фильмах.
+    
+    Attributes:
+        id (int): Уникальный идентификатор фильма
+        name (str): Название фильма
+        price (int): Цена фильма в копейках
+        description (str): Описание фильма
+        image_url (str): URL изображения фильма
+        location (str): Местоположение показа
+        published (bool): Статус публикации фильма
+        rating (float): Рейтинг фильма
+        genre_id (int): ID жанра фильма
+        created_at (datetime): Дата и время создания записи
+    """
+
     __tablename__ = 'movies'
 
     id = Column(Integer, primary_key=True)  # int в БД
@@ -20,7 +39,13 @@ class MovieDBModel(Base):
     created_at = Column(DateTime)  # timestamp в БД
 
     def to_dict(self) -> Dict[str, Any]:
-        """Преобразование в словарь"""
+        """
+        Преобразование объекта фильма в словарь.
+        
+        Returns:
+            Dict[str, Any]: Словарь с данными фильма для сериализации
+        """
+
         return {
             'id': self.id,
             'name': self.name,
@@ -35,5 +60,10 @@ class MovieDBModel(Base):
         }
 
     def __repr__(self):
-        return f"<Movie(id='{self.id}', name='{self.name}', price={self.price})>"
+        """
+        Строковое представление объекта фильма для отладки.
         
+        Returns:
+            str: Строковое представление с основными атрибутами фильма
+        """
+        return f"<Movie(id='{self.id}', name='{self.name}', price={self.price})>"

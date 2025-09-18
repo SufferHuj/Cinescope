@@ -1,3 +1,8 @@
+"""
+Модуль для работы с базой данных PostgreSQL.
+Содержит настройки подключения и создание сессий для работы с БД.
+"""
+
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 import sys
@@ -14,17 +19,20 @@ HOST = MoviesDbCreds.HOST
 PORT = MoviesDbCreds.PORT
 DATABASE_NAME = MoviesDbCreds.DATABASE_NAME
 
-#  движок для подключения к базе данных
+# Движок для подключения к базе данных PostgreSQL
 engine = create_engine(
     f"postgresql+psycopg2://{USERNAME}:{PASSWORD}@{HOST}:{PORT}/{DATABASE_NAME}",
-    echo=False  # Установить True для отладки SQL запросов
+    echo=True  # Установить True для отладки SQL запросов
 )
 
-#  создаем фабрику сессий
+# Создаем фабрику сессий для работы с БД
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 def get_db_session():
-    """Создает новую сессию БД"""
+    """
+    Создает новую сессию БД.
+    :return: Объект сессии SQLAlchemy для работы с базой данных.
+    """
     return SessionLocal()
 
 if __name__ == "__main__":

@@ -4,6 +4,12 @@ from utils.data_generator import faker as global_faker
 
 
 class TestReviewsAPI:
+    """
+    Класс тестов для API отзывов.
+    
+    Включает тесты для всех операций с отзывами: создание, получение,
+    обновление и удаление отзывов к фильмам различными ролями пользователей.
+    """
 
     # ТЕСТЫ ДЛЯ GET /movies/{movieId}/reviews
     def test_get_movie_reviews_success(self, api_manager: ApiManager, create_movie):

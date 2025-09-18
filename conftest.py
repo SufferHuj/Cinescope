@@ -1,6 +1,7 @@
 import pytest
 import requests
 import random
+from datetime import datetime
 
 from api.api_manager import ApiManager
 from constants import BASE_URL
@@ -12,6 +13,9 @@ from resources.user_creds import SuperAdminCreds
 from constants import Roles
 from models.auth_model import TestUserData
 from utils.data_generator import faker as global_faker
+from sqlalchemy.orm import Session
+from db_requester.db_client import get_db_session
+from db_requester.db_helpers import DBHelper
 
 
 # ФИКСТУРЫ ДЛЯ ТЕСТОВ AuthAPI и UserAPI
@@ -20,6 +24,13 @@ from utils.data_generator import faker as global_faker
 def test_user():
     """
     Генерация случайного пользователя для тестов.
+    
+    Создает тестового пользователя с случайными данными:
+    - email, имя и пароль генерируются автоматически
+    - роль по умолчанию - USER
+    
+    Returns:
+        TestUserData: Объект с данными тестового пользователя
     """
 
 
@@ -38,8 +49,21 @@ def test_user():
 def registered_user(api_manager, test_user: TestUserData):
     """
     Фикстура для регистрации и получения данных зарегистрированного пользователя.
-    Обеспечивает очистку созданного пользователя после завершения теста.
-    Пользователь удаляет сам себя согласно API документации.
+    
+    Выполняет полный цикл работы с тестовым пользователем:
+    - Регистрирует пользователя через API
+    - Предоставляет данные для использования в тестах
+    - Обеспечивает автоматическую очистку после завершения теста
+    
+    Args:
+        api_manager: Менеджер для работы с API
+        test_user: Данные тестового пользователя
+        
+    Yields:
+        dict: Словарь с данными зарегистрированного пользователя, включая ID
+        
+    Note:
+        Пользователь удаляет сам себя согласно API документации.
     """
 
     # Регистрируем нового пользователя через API
@@ -91,6 +115,15 @@ def session():
 def api_manager(session):
     """
     Фикстура для создания экземпляра ApiManager.
+    
+    Создает центральный менеджер для работы со всеми API эндпоинтами.
+    Использует переданную HTTP сессию для выполнения запросов.
+    
+    Args:
+        session: HTTP сессия для выполнения запросов
+        
+    Returns:
+        ApiManager: Настроенный менеджер для работы с API
     """
 
     return ApiManager(session)
@@ -205,6 +238,7 @@ def general_user(request):
     """
     Фикстура для передачи ролей пользователей в тестовый метод
     """
+
     return request.getfixturevalue(request.param)
 
 
@@ -274,14 +308,75 @@ def review_data():
         "text": f"Тестовый отзыв - {global_faker.text(max_nb_chars=100)}"
     }
 
+# ФИКСТУРЫ ДЛЯ ТЕСТОВ PaymentAPI
 
 @pytest.fixture(scope='function')
 def payment_request_data(create_movie):
     """
     Фикстура для генерации данных для создания платежа
     """
+
     return {
         "movieId": create_movie,
         "amount": global_faker.random_int(min=100, max=10000),
         "card": TestCardData.CARD_DATA
+    }
+
+# ФИКСТУРЫ ДЛЯ ТЕСТОВ БД 
+
+@pytest.fixture(scope="module")
+def db_session() -> Session:
+    """
+    Фикстура, которая создает и возвращает сессию для работы с базой данных
+    После завершения теста сессия автоматически закрывается
+    """
+
+    db_session = get_db_session()
+
+    yield db_session
+
+    db_session.close()
+
+@pytest.fixture(scope="function")
+def db_helper(db_session) -> DBHelper:
+    """
+    Фикстура для экземпляра хелпера
+    """
+
+    db_helper = DBHelper(db_session)
+
+    return db_helper
+
+@pytest.fixture(scope="function")
+def created_test_user(db_helper):
+    """
+    Фикстура, которая создает тестового пользователя в БД
+    и удаляет его после завершения теста
+    """
+
+    user = db_helper.create_test_user(DataGenerator.generate_user_data())
+    
+    yield user
+
+    # Cleanup после теста
+    if db_helper.get_user_by_id(user.id):
+        db_helper.delete_user(user)
+
+@pytest.fixture(scope="function")
+def movie_test_data():
+    """
+    Фикстура для генерации тестовых данных фильма для БД
+    """
+    locations = ["MSK", "SPB"]
+    
+    return {
+        'name': f"Тестовый фильм - {global_faker.catch_phrase()}",
+        'price': random.randint(100, 1000),
+        'description': global_faker.text(max_nb_chars=200),
+        'image_url': global_faker.image_url(),
+        'location': random.choice(locations),
+        'published': random.choice([True, False]),
+        'rating': round(random.uniform(1.0, 5.0), 1),
+        'genre_id': random.randint(1, 10),
+        'created_at': datetime.now()
     }

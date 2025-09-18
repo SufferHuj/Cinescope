@@ -2,6 +2,12 @@ import pytest
 
 
 class TestMovieAPI:
+    """
+    Класс тестов для API фильмов.
+    
+    Включает тесты для получения списка фильмов, фильтрации по различным
+    параметрам и проверки структуры данных.
+    """
 
     # Тесты для GET /movies
     def test_get_all_movies(self, common_user, movie_data):
