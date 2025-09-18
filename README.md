@@ -382,4 +382,16 @@ def create_payment(self, movie_id: int, card_data: dict) -> dict:
 
 ---
 
-**Создано с ❤️ к автоматизации тестирования **
+<div align="center">
+
+### 🎬 Cinescope Test Automation Framework
+
+*Создано с ❤️ к автоматизации тестирования*
+
+[![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://python.org)
+[![Pytest](https://img.shields.io/badge/Pytest-8.3.5-green.svg)](https://pytest.org)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
+**🚀 Качественное тестирование • 🔧 Надежная автоматизация • 📊 Детальная отчетность**
+
+</div>
