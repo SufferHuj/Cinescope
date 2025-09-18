@@ -29,4 +29,7 @@ env/
 .DS_Store
 Thumbs.db
 
+# Database examples with credentials
+db_requester/sql_alchemy_client_simple_example.py
+
 PydanticExamples/
