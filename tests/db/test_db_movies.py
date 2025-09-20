@@ -11,7 +11,9 @@ class TestDBMovies:
     """
 
     def test_db_movie_requests(self, db_helper, movie_test_data, created_test_user):
-        """Тест базовых операций с фильмами через DBHelper"""
+        """
+        Тест базовых операций с фильмами через DBHelper
+        """
         # Используем готовую фикстуру пользователя
         created_user = created_test_user
         
@@ -37,7 +39,9 @@ class TestDBMovies:
             db_helper.cleanup_test_data([created_movie])
 
     def test_movie_crud_operations(self, db_helper, movie_test_data):
-        """Тест CRUD операций с фильмами"""
+        """
+        Тест CRUD операций с фильмами
+        """
         # Создание фильма
         created_movie = db_helper.create_test_movie(movie_test_data)
         
@@ -64,7 +68,9 @@ class TestDBMovies:
             db_helper.cleanup_test_data([created_movie])
 
     def test_movie_filtering_methods(self, db_helper, movie_test_data):
-        """Тест методов фильтрации фильмов"""
+        """
+        Тест методов фильтрации фильмов
+        """
         # Создаем несколько фильмов с разными параметрами
         movie_data_1 = movie_test_data.copy()
         movie_data_1['name'] = f"Фильм 1 - {faker.catch_phrase()}"
