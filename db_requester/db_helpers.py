@@ -2,6 +2,7 @@ from typing import List, Optional, Union
 from sqlalchemy.orm import Session
 from db_models.db_user_model import UserDBModel
 from db_models.db_movie_model import MovieDBModel
+from db_models.db_account_transaction_template_model import AccountTransactionTemplate
 
 
 class DBHelper:
@@ -238,3 +239,86 @@ class DBHelper:
             int: Общее количество пользователей
         """
         return self.db_session.query(UserDBModel).count()
+        
+    # ==================== МЕТОДЫ для работы с accounts_transaction_template ====================
+    
+    def create_test_account(self, user_name: str, balance: int):
+        """
+        Создает тестовый аккаунт в базе данных.
+        
+        Args:
+            user_name: Имя пользователя
+            balance: Начальный баланс
+            
+        Returns:
+            AccountTransactionTemplate: Созданный объект аккаунта
+        """
+        account = AccountTransactionTemplate(user=user_name, balance=balance)
+        self.db_session.add(account)
+        self.db_session.commit()
+        return account
+    
+    def get_account_by_user(self, user_name: str):
+        """
+        Получает аккаунт по имени пользователя.
+        
+        Args:
+            user_name: Имя пользователя
+            
+        Returns:
+            AccountTransactionTemplate или None: Найденный аккаунт или None
+        """
+        return self.db_session.query(AccountTransactionTemplate).filter_by(user=user_name).first()
+    
+    def account_exists_by_user(self, user_name: str) -> bool:
+        """
+        Проверяет существование аккаунта по имени пользователя.
+        
+        Args:
+            user_name: Имя пользователя
+            
+        Returns:
+            bool: True если аккаунт существует, False иначе
+        """
+        return self.db_session.query(AccountTransactionTemplate).filter_by(user=user_name).first() is not None
+    
+    def update_account_balance(self, user_name: str, new_balance: int):
+        """
+        Обновляет баланс аккаунта.
+        
+        Args:
+            user_name: Имя пользователя
+            new_balance: Новый баланс
+        """
+        account = self.db_session.query(AccountTransactionTemplate).filter_by(user=user_name).first()
+        if account:
+            account.balance = new_balance
+            self.db_session.commit()
+        else:
+            raise ValueError(f"Аккаунт с именем пользователя '{user_name}' не найден")
+    
+    def get_all_accounts(self):
+        """
+        Получает все аккаунты из базы данных.
+        
+        Returns:
+            List[AccountTransactionTemplate]: Список всех аккаунтов
+        """
+        return self.db_session.query(AccountTransactionTemplate).all()
+    
+    def delete_account_by_user(self, user_name: str):
+        """
+        Удаляет аккаунт по имени пользователя.
+        
+        Args:
+            user_name: Имя пользователя
+            
+        Returns:
+            bool: True если аккаунт был удален, False если не найден
+        """
+        account = self.db_session.query(AccountTransactionTemplate).filter_by(user=user_name).first()
+        if account:
+            self.db_session.delete(account)
+            self.db_session.commit()
+            return True
+        return False

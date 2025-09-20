@@ -1,3 +1,8 @@
+"""
+Модель пользователя для работы с базой данных.
+Содержит SQLAlchemy модель для таблицы users.
+"""
+
 from sqlalchemy import Column, String, Boolean, DateTime
 from sqlalchemy.orm import declarative_base
 from typing import Dict, Any
