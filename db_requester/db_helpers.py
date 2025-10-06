@@ -2,6 +2,7 @@ from typing import List, Optional, Union
 from sqlalchemy.orm import Session
 from db_models.db_user_model import UserDBModel
 from db_models.db_movie_model import MovieDBModel
+from db_models.db_genre_model import GenreDBModel
 from db_models.db_account_transaction_template_model import AccountTransactionTemplate
 
 
@@ -26,7 +27,46 @@ class DBHelper:
         """
         self.db_session = db_session
 
-    # ==================== МЕТОДЫ ДЛЯ РАБОТЫ С ПОЛЬЗОВАТЕЛЯМИ ====================
+    # ==================== ОБЩИЕ МЕТОДЫ ====================
+    
+    def cleanup_test_data(self, objects_to_delete: List[Union[UserDBModel, MovieDBModel, GenreDBModel]]) -> None:
+        """
+        Очищает тестовые данные из базы данных.
+        
+        Удаляет переданные объекты из БД. Полезно для очистки после тестов.
+        
+        Args:
+            objects_to_delete (List[Union[UserDBModel, MovieDBModel]]): 
+                Список объектов для удаления
+                
+        Example:
+            test_objects = [user1, user2, movie1, movie2]
+            db_helper.cleanup_test_data(test_objects)
+        """
+        for obj in objects_to_delete:
+            if obj:
+                self.db_session.delete(obj)
+        self.db_session.commit()
+
+    def get_total_movies_count(self) -> int:
+        """
+        Получает общее количество фильмов в базе данных.
+        
+        Returns:
+            int: Общее количество фильмов
+        """
+        return self.db_session.query(MovieDBModel).count()
+
+    def get_total_users_count(self) -> int:
+        """
+        Получает общее количество пользователей в базе данных.
+        
+        Returns:
+            int: Общее количество пользователей
+        """
+        return self.db_session.query(UserDBModel).count()
+
+    # ==================== МЕТОДЫ ДЛЯ РАБОТЫ С ПОЛЬЗОВАТЕЛЯМИ users ====================
     
     def create_test_user(self, user_data: dict) -> UserDBModel:
         """
@@ -98,7 +138,7 @@ class DBHelper:
         self.db_session.delete(user)
         self.db_session.commit()
 
-    # ==================== МЕТОДЫ ДЛЯ РАБОТЫ С ФИЛЬМАМИ ====================
+    # ==================== МЕТОДЫ ДЛЯ РАБОТЫ С ФИЛЬМАМИ movies ====================
     
     def create_test_movie(self, movie_data: dict) -> MovieDBModel:
         """
@@ -201,46 +241,77 @@ class DBHelper:
         self.db_session.delete(movie)
         self.db_session.commit()
 
-    # ==================== ОБЩИЕ МЕТОДЫ ====================
+    # ==================== МЕТОДЫ ДЛЯ РАБОТЫ С ЖАНРАМИ genres ====================
     
-    def cleanup_test_data(self, objects_to_delete: List[Union[UserDBModel, MovieDBModel]]) -> None:
+    def create_test_genre(self, genre_data: dict) -> GenreDBModel:
         """
-        Очищает тестовые данные из базы данных.
-        
-        Удаляет переданные объекты из БД. Полезно для очистки после тестов.
+        Создает тестовый жанр в базе данных.
         
         Args:
-            objects_to_delete (List[Union[UserDBModel, MovieDBModel]]): 
-                Список объектов для удаления
-                
+            genre_data (dict): Словарь с данными жанра
+            
+        Returns:
+            GenreDBModel: Созданный объект жанра с присвоенным ID
+            
         Example:
-            test_objects = [user1, user2, movie1, movie2]
-            db_helper.cleanup_test_data(test_objects)
+            genre_data = {
+                'name': 'Action'
+            }
+            genre = db_helper.create_test_genre(genre_data)
         """
-        for obj in objects_to_delete:
-            if obj:
-                self.db_session.delete(obj)
+        genre = GenreDBModel(**genre_data)
+        self.db_session.add(genre)
+        self.db_session.commit()
+        self.db_session.refresh(genre)
+        return genre
+
+    def get_genre_by_id(self, genre_id: Union[str, int]) -> Optional[GenreDBModel]:
+        """
+        Получает жанр по ID.
+        
+        Args:
+            genre_id (Union[str, int]): ID жанра
+            
+        Returns:
+            Optional[GenreDBModel]: Объект жанра или None, если не найден
+        """
+        return self.db_session.query(GenreDBModel).filter(GenreDBModel.id == genre_id).first()
+
+    def get_genre_by_name(self, name: str) -> Optional[GenreDBModel]:
+        """
+        Получает жанр по названию.
+        
+        Args:
+            name (str): Название жанра
+            
+        Returns:
+            Optional[GenreDBModel]: Объект жанра или None, если не найден
+        """
+        return self.db_session.query(GenreDBModel).filter(GenreDBModel.name == name).first()
+
+    def genre_exists_by_name(self, name: str) -> bool:
+        """
+        Проверяет существование жанра по названию.
+        
+        Args:
+            name (str): Название жанра
+            
+        Returns:
+            bool: True, если жанр существует, False в противном случае
+        """
+        return self.db_session.query(GenreDBModel).filter(GenreDBModel.name == name).first() is not None
+
+    def delete_genre(self, genre: GenreDBModel) -> None:
+        """
+        Удаляет жанр из базы данных.
+        
+        Args:
+            genre (GenreDBModel): Объект жанра для удаления
+        """
+        self.db_session.delete(genre)
         self.db_session.commit()
 
-    def get_total_movies_count(self) -> int:
-        """
-        Получает общее количество фильмов в базе данных.
-        
-        Returns:
-            int: Общее количество фильмов
-        """
-        return self.db_session.query(MovieDBModel).count()
-
-    def get_total_users_count(self) -> int:
-        """
-        Получает общее количество пользователей в базе данных.
-        
-        Returns:
-            int: Общее количество пользователей
-        """
-        return self.db_session.query(UserDBModel).count()
-        
-    # ==================== МЕТОДЫ для работы с accounts_transaction_template ====================
+    # ==================== МЕТОДЫ ДЛЯ РАБОТЫ С АККАУНТАМИ accounts ====================
     
     def create_test_account(self, user_name: str, balance: int):
         """

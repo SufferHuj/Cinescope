@@ -68,6 +68,7 @@ Cinescope/
 ├── 🗄️ Database Layer
 │   ├── db_models/           # ORM модели
 │   │   ├── db_account_transaction_template_model.py  # Модель шаблона транзакций счетов
+│   │   ├── db_genre_model.py    # Модель жанра фильма (NEW)
 │   │   ├── db_movie_model.py    # Модель фильма с жанрами
 │   │   └── db_user_model.py     # Модель пользователя с ролями
 │   └── db_requester/        # Работа с БД
@@ -95,6 +96,7 @@ Cinescope/
 │   │   └── test_user_api.py        # Тесты пользовательского API
 │   ├── db/                  # Database тестирование
 │   │   ├── test_db_accounts_transaction_template.py  # Тесты транзакций и балансов
+│   │   ├── test_db_genres.py       # Тесты операций с БД жанров
 │   │   ├── test_db_movies.py       # Тесты операций с БД фильмов
 │   │   └── test_db_users.py        # Тесты операций с БД пользователей
 │   └── ui/                  # UI тестирование
