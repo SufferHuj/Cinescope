@@ -67,3 +67,18 @@ class MoviesAPI(CustomRequester):
             endpoint=f"/movies/{movie_id}",
             expected_status=expected_status
         )
+
+    def patch_movie(self, movie_id, movie_data, expected_status=200):
+        """
+        Частичное обновление фильма по его ID. Требуется токен авторизации.
+        :param movie_id: ID фильма.
+        :param movie_data: Данные для обновления (словарь).
+        :return: Объект ответа requests.Response.
+        """
+
+        return self.send_request(
+            method="PATCH",
+            endpoint=f"/movies/{movie_id}",
+            data=movie_data,
+            expected_status=expected_status
+        )
