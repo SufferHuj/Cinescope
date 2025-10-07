@@ -2,17 +2,11 @@ from utils.data_generator import faker
 
 
 class TestDBGenres:
-    """
-    Класс тестов для работы с базой данных жанров.
-    
-    Включает тесты для создания, чтения, обновления и удаления жанров,
-    а также проверки уникальности, валидации и различных методов поиска.
-    """
+    """ Класс тестов для работы с базой данных жанров """
 
     def test_genre_crud_operations(self, db_helper):
-        """
-        Тест базовых CRUD операций с жанрами
-        """
+        """ Тест базовых CRUD операций с жанрами """
+        
         # Генерируем тестовые данные жанра
         genre_data = {
             'name': f"Test Genre {faker.word()}"
@@ -58,9 +52,8 @@ class TestDBGenres:
 
 
     def test_genre_deletion(self, db_helper):
-        """
-        Тест удаления жанров
-        """
+        """ Тест удаления жанров """
+
         # Создаем жанр для удаления
         genre_data = {'name': f"To Delete Genre {faker.word()}"}
         

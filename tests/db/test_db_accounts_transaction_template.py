@@ -1,20 +1,13 @@
 import pytest
-from sqlalchemy.orm import Session
-from utils.data_generator import DataGenerator, faker
+from utils.data_generator import faker
 
 
 class TestDBAccountsTransactionTemplate:
-    """
-    Класс тестов для работы с базой данных accounts_transaction_template.
-    
-    Включает тесты для создания, чтения, обновления и удаления записей,
-    а также тестирование транзакций и переводов между счетами.
-    """
+    """ Класс тестов для работы с базой данных accounts_transaction_template """
     
     def test_account_crud_operations(self, db_helper):
-        """
-        Тест базовых CRUD операций с аккаунтами
-        """
+        """ Тест базовых CRUD операций с аккаунтами """
+
         # Генерируем тестовые данные
         user_name = f"TestUser_{faker.uuid4()}"
         initial_balance = faker.random_int(min=1000, max=5000)
@@ -47,9 +40,8 @@ class TestDBAccountsTransactionTemplate:
             db_helper.cleanup_test_data([account])
 
     def test_account_balance_operations(self, db_helper):
-        """
-        Тест операций с балансом аккаунта
-        """
+        """ Тест операций с балансом аккаунта """
+
         user_name = f"BalanceUser_{faker.uuid4()}"
         initial_balance = 1000
         
@@ -71,9 +63,8 @@ class TestDBAccountsTransactionTemplate:
             db_helper.cleanup_test_data([account])
 
     def test_multiple_accounts_operations(self, db_helper):
-        """
-        Тест операций с несколькими аккаунтами
-        """
+        """ Тест операций с несколькими аккаунтами """
+
         # Создаем несколько аккаунтов
         accounts_data = [
             (f"User1_{faker.uuid4()}", 1000),
@@ -109,9 +100,8 @@ class TestDBAccountsTransactionTemplate:
             db_helper.cleanup_test_data(accounts)
 
     def test_accounts_transaction_template(self, db_helper):
-        """
-        Тест транзакций между аккаунтами
-        """
+        """ Тест транзакций между аккаунтами """
+
         # Создаем новые записи в базе данных
         stan_user = f"Stan_{faker.random_int(min=10000, max=99999)}"
         bob_user = f"Bob_{faker.random_int(min=10000, max=99999)}"
@@ -120,9 +110,8 @@ class TestDBAccountsTransactionTemplate:
         bob = db_helper.create_test_account(bob_user, 500)
         
         def transfer_money(from_user: str, to_user: str, amount: int):
-            """
-            Переводит деньги с одного счета на другой.
-            """
+            """ Переводит деньги с одного счета на другой """
+
             from_account = db_helper.get_account_by_user(from_user)
             to_account = db_helper.get_account_by_user(to_user)
 
@@ -170,9 +159,8 @@ class TestDBAccountsTransactionTemplate:
             db_helper.cleanup_test_data([stan, bob])
 
     def test_account_to_dict_method(self, db_helper):
-        """
-        Тест метода to_dict для аккаунта
-        """
+        """ Тест метода to_dict для аккаунта """
+
         user_name = f"DictUser_{faker.uuid4()}"
         balance = 750
         

@@ -1,26 +1,13 @@
-"""
-Тесты для методов работы с платежами в базе данных.
-
-Этот модуль содержит тесты для проверки корректности работы методов
-DBHelper, связанных с операциями над платежами в базе данных.
-"""
-
 from utils.data_generator import DataGenerator
 from db_models.db_payment_model import PaymentStatus
 
 
 class TestDBPayments:
-    """
-    Класс тестов для работы с базой данных платежей.
-    
-    Включает тесты для создания, чтения и удаления платежей,
-    а также проверки различных статусов платежей.
-    """
+    """ Тесты для работы с базой данных платежей """
 
     def test_create_payment_success(self, db_helper, movie_test_data, payment_test_data):
-        """
-        Тест успешного создания платежа
-        """
+        """ Тест успешного создания платежа"""
+
         # Создаем тестового пользователя и фильм
         user_data = DataGenerator.generate_user_data()
         created_user = db_helper.create_test_user(user_data)
@@ -47,9 +34,8 @@ class TestDBPayments:
             db_helper.cleanup_test_data([payment, created_user, created_movie])
 
     def test_get_payment_by_id_existing(self, db_helper, movie_test_data, payment_test_data):
-        """
-        Тест получения существующего платежа по ID
-        """
+        """ Тест получения существующего платежа по ID """
+
         # Создаем тестового пользователя и фильм
         user_data = DataGenerator.generate_user_data()
         created_user = db_helper.create_test_user(user_data)
@@ -77,9 +63,7 @@ class TestDBPayments:
             db_helper.cleanup_test_data([created_payment, created_user, created_movie])
 
     def test_create_payment_with_invalid_card_status(self, db_helper, movie_test_data, payment_test_data):
-        """
-        Тест создания платежа со статусом INVALID_CARD
-        """
+        """ Тест создания платежа со статусом INVALID_CARD """
         # Создаем тестового пользователя и фильм
         user_data = DataGenerator.generate_user_data()
         created_user = db_helper.create_test_user(user_data)
@@ -106,9 +90,7 @@ class TestDBPayments:
             db_helper.cleanup_test_data([created_payment, created_user, created_movie])
 
     def test_create_payment_with_error_status(self, db_helper, movie_test_data, payment_test_data):
-        """
-        Тест создания платежа со статусом ERROR
-        """
+        """ Тест создания платежа со статусом ERROR """
         # Создаем тестового пользователя и фильм
         user_data = DataGenerator.generate_user_data()
         created_user = db_helper.create_test_user(user_data)
@@ -135,9 +117,7 @@ class TestDBPayments:
             db_helper.cleanup_test_data([created_payment, created_user, created_movie])
 
     def test_delete_payment_success(self, db_helper, movie_test_data, payment_test_data):
-        """
-        Тест успешного удаления платежа
-        """
+        """ Тест успешного удаления платежа """
         # Создаем тестового пользователя и фильм
         user_data = DataGenerator.generate_user_data()
         created_user = db_helper.create_test_user(user_data)

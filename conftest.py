@@ -23,17 +23,7 @@ from db_models.db_payment_model import PaymentStatus
 
 @pytest.fixture(scope='function')
 def test_user():
-    """
-    Генерация случайного пользователя для тестов.
-    
-    Создает тестового пользователя с случайными данными:
-    - email, имя и пароль генерируются автоматически
-    - роль по умолчанию - USER
-    
-    Returns:
-        TestUserData: Объект с данными тестового пользователя
-    """
-
+    """Генерация случайного пользователя для тестов"""
 
     random_password = DataGenerator.generation_random_password()
 
@@ -48,24 +38,7 @@ def test_user():
 
 @pytest.fixture(scope="function")
 def registered_user(api_manager, test_user: TestUserData):
-    """
-    Фикстура для регистрации и получения данных зарегистрированного пользователя.
-    
-    Выполняет полный цикл работы с тестовым пользователем:
-    - Регистрирует пользователя через API
-    - Предоставляет данные для использования в тестах
-    - Обеспечивает автоматическую очистку после завершения теста
-    
-    Args:
-        api_manager: Менеджер для работы с API
-        test_user: Данные тестового пользователя
-        
-    Yields:
-        dict: Словарь с данными зарегистрированного пользователя, включая ID
-        
-    Note:
-        Пользователь удаляет сам себя согласно API документации.
-    """
+    """Фикстура для регистрации и получения данных зарегистрированного пользователя"""
 
     # Регистрируем нового пользователя через API
     response = api_manager.auth_api.register_user(user_data=test_user, expected_status=201)
@@ -92,9 +65,7 @@ def registered_user(api_manager, test_user: TestUserData):
 
 @pytest.fixture(scope="session")
 def requester():
-    """
-    Фикстура для создания экземпляра CustomRequester.
-    """
+    """Фикстура для создания экземпляра CustomRequester"""
 
     session = requests.Session()
     return CustomRequester(session=session, base_url=BASE_URL)
@@ -102,9 +73,7 @@ def requester():
 
 @pytest.fixture(scope="session")
 def session():
-    """
-    Фикстура для создания HTTP-сессии.
-    """
+    """Фикстура для создания HTTP-сессии"""
 
     http_session = requests.Session()
 
@@ -114,27 +83,14 @@ def session():
 
 @pytest.fixture(scope="session")
 def api_manager(session):
-    """
-    Фикстура для создания экземпляра ApiManager.
-    
-    Создает центральный менеджер для работы со всеми API эндпоинтами.
-    Использует переданную HTTP сессию для выполнения запросов.
-    
-    Args:
-        session: HTTP сессия для выполнения запросов
-        
-    Returns:
-        ApiManager: Настроенный менеджер для работы с API
-    """
+    """Фикстура для создания экземпляра ApiManager"""
 
     return ApiManager(session)
 
 
 @pytest.fixture()
 def user_session():
-    """
-    Фикстура на создание сессии юзера
-    """
+    """Фикстура на создание сессии юзера"""
 
     user_pool = []
 
@@ -152,9 +108,7 @@ def user_session():
 
 @pytest.fixture
 def super_admin(user_session):
-    """
-    Фикстура на создание пользователя с ролью SUPER_ADMIN
-    """
+    """Фикстура на создание пользователя с ролью SUPER_ADMIN"""
 
     new_session = user_session()
 
@@ -176,9 +130,7 @@ def super_admin(user_session):
 
 @pytest.fixture(scope="function")
 def creation_user_data(test_user: TestUserData):
-    """
-    Фикстура для создания общего юзера
-    """
+    """Фикстура для создания общего юзера"""
 
     updated_data = test_user.model_dump()
     updated_data.update({
@@ -190,9 +142,7 @@ def creation_user_data(test_user: TestUserData):
 
 @pytest.fixture
 def common_user(user_session, super_admin, creation_user_data):
-    """
-    Фикстура для создания юзера с ролью USER
-    """
+    """Фикстура для создания юзера с ролью USER"""
 
     new_session = user_session()
 
@@ -209,9 +159,7 @@ def common_user(user_session, super_admin, creation_user_data):
 
 @pytest.fixture
 def admin(user_session, super_admin, creation_user_data):
-    """
-    Фикстура для создания юзера с ролью ADMIN
-    """
+    """Фикстура для создания юзера с ролью ADMIN"""
 
     new_session = user_session()
 
@@ -236,9 +184,7 @@ def admin(user_session, super_admin, creation_user_data):
 
 @pytest.fixture
 def general_user(request):
-    """
-    Фикстура для передачи ролей пользователей в тестовый метод
-    """
+    """Фикстура для передачи ролей пользователей в тестовый метод"""
 
     return request.getfixturevalue(request.param)
 
@@ -247,9 +193,7 @@ def general_user(request):
 
 @pytest.fixture(scope='function')
 def movie_data():
-    """
-    Фикстура для генерации валидных данных фильма.
-    """
+    """Фикстура для генерации валидных данных фильма"""
 
     location = ["MSK", "SPB"]
 
@@ -266,9 +210,7 @@ def movie_data():
 
 @pytest.fixture(scope="function")
 def create_movie(super_admin, movie_data):
-    """
-    Фикстура для создания фильма и возврата его ID.
-    """
+    """Фикстура для создания фильма и возврата его ID"""
 
     response = super_admin.api.movies_api.create_movie(
         movie_data=movie_data,
@@ -287,9 +229,7 @@ def create_movie(super_admin, movie_data):
 
 @pytest.fixture(scope="function")
 def genre_data() -> dict[str, str]:
-    """
-    Фикстура для генерации валидных данных жанра
-    """
+    """Фикстура для генерации валидных данных жанра"""
 
     return {
         "name": f"Тестовый жанр - {global_faker.word()}{global_faker.random_number(digits=4)}",
@@ -300,9 +240,7 @@ def genre_data() -> dict[str, str]:
 
 @pytest.fixture(scope="function")
 def review_data():
-    """
-    Фикстура для генерации валидных данных отзыва
-    """
+    """Фикстура для генерации валидных данных отзыва"""
 
     return {
         "rating": random.randint(1, 5),
@@ -313,9 +251,7 @@ def review_data():
 
 @pytest.fixture(scope='function')
 def payment_request_data(create_movie):
-    """
-    Фикстура для генерации данных для создания платежа
-    """
+    """Фикстура для генерации данных для создания платежа"""
 
     return {
         "movieId": create_movie,
@@ -327,10 +263,7 @@ def payment_request_data(create_movie):
 
 @pytest.fixture(scope="module")
 def db_session() -> Session:
-    """
-    Фикстура, которая создает и возвращает сессию для работы с базой данных
-    После завершения теста сессия автоматически закрывается
-    """
+    """Фикстура для создания сессии БД"""
 
     db_session = get_db_session()
 
@@ -340,9 +273,7 @@ def db_session() -> Session:
 
 @pytest.fixture(scope="function")
 def db_helper(db_session) -> DBHelper:
-    """
-    Фикстура для экземпляра хелпера
-    """
+    """Фикстура для экземпляра хелпера"""
 
     db_helper = DBHelper(db_session)
 
@@ -350,10 +281,7 @@ def db_helper(db_session) -> DBHelper:
 
 @pytest.fixture(scope="function")
 def created_test_user(db_helper):
-    """
-    Фикстура, которая создает тестового пользователя в БД
-    и удаляет его после завершения теста
-    """
+    """Фикстура для создания тестового пользователя в БД"""
 
     user = db_helper.create_test_user(DataGenerator.generate_user_data())
     
@@ -365,9 +293,8 @@ def created_test_user(db_helper):
 
 @pytest.fixture(scope="function")
 def movie_test_data():
-    """
-    Фикстура для генерации тестовых данных фильма для БД
-    """
+    """Фикстура для генерации тестовых данных фильма для БД"""
+    
     locations = ["MSK", "SPB"]
     
     return {
@@ -384,9 +311,8 @@ def movie_test_data():
 
 @pytest.fixture(scope="function")
 def review_test_data():
-    """
-    Фикстура для генерации тестовых данных отзыва для БД
-    """
+    """Фикстура для генерации тестовых данных отзыва для БД"""
+
     return {
         'text': global_faker.text(max_nb_chars=200),
         'rating': global_faker.random_int(min=1, max=5),
@@ -396,12 +322,10 @@ def review_test_data():
 
 @pytest.fixture(scope="function")
 def payment_test_data():
-    """
-    Фикстура для генерации тестовых данных платежа для БД тестов
-    """
+    """Фикстура для генерации тестовых данных платежа для БД тестов"""
     
-    def _create_payment_data(user_id=None, movie_id=None, status=None):
-        
+    def _create_payment_data(user_id=None, movie_id=None, status=None):    
+            
         return {
             'user_id': user_id or DataGenerator.generation_random_uuid(),
             'movie_id': movie_id or DataGenerator.generation_random_uuid(),

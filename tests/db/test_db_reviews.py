@@ -2,17 +2,10 @@ from utils.data_generator import DataGenerator
 
 
 class TestDBReviews:
-    """
-    Класс тестов для работы с базой данных отзывов.
-    
-    Включает тесты для создания, чтения, обновления и удаления отзывов,
-    а также проверки различных методов поиска и фильтрации.
-    """
+    """ Тесты для работы с базой данных отзывов """
 
     def test_review_crud_operations(self, db_helper, created_test_user, movie_test_data, review_test_data):
-        """
-        Тест базовых CRUD операций с отзывами
-        """
+        """ Тест базовых CRUD операций с отзывами """
         # Создаем тестовый фильм
         created_movie = db_helper.create_test_movie(movie_test_data)
         
@@ -61,9 +54,7 @@ class TestDBReviews:
             db_helper.cleanup_test_data([created_review, created_movie])
 
     def test_review_filtering_by_movie(self, db_helper, movie_test_data, review_test_data):
-        """
-        Тест фильтрации отзывов по фильму
-        """
+        """ Тест фильтрации отзывов по фильму """
         # Создаем тестовый фильм
         created_movie = db_helper.create_test_movie(movie_test_data)
         
@@ -101,9 +92,7 @@ class TestDBReviews:
 
 
     def test_review_update_operations(self, db_helper, created_test_user, movie_test_data, review_test_data):
-        """
-        Тест операций обновления отзывов
-        """
+        """ Тест операций обновления отзывов """
         # Создаем тестовый фильм
         created_movie = db_helper.create_test_movie(movie_test_data)
         
@@ -183,9 +172,7 @@ class TestDBReviews:
             db_helper.cleanup_test_data([created_review, created_movie])
 
     def test_review_deletion(self, db_helper, created_test_user, movie_test_data, review_test_data):
-        """
-        Тест удаления отзывов
-        """
+        """ Тест удаления отзывов """
         # Создаем тестовый фильм
         created_movie = db_helper.create_test_movie(movie_test_data)
         
