@@ -8,48 +8,26 @@ faker = Faker()
 
 
 class DataGenerator:
-    """
-    Класс для генерации случайных тестовых данных.
-    
-    Предоставляет статические методы для создания различных типов
-    тестовых данных, соответствующих требованиям системы.
-    """
+    """ Класс для генерации случайных тестовых данных """
 
     @staticmethod
     def generation_random_email():
-        """
-        Генерация случайного email адреса для тестирования.
-        
-        Returns:
-            str: Email адрес в формате kkkek{random_string}@gmail.com
-        """
+        """ Генерация случайного email адреса для тестирования """
+
         random_string = ''.join(random.choices(string.ascii_lowercase + string.digits, k=8))
-        return f"kkkek{random_string}@gmail.com"
+        return f"kek{random_string}@gmail.com"
 
     @staticmethod
     def generation_random_name():
-        """
-        Генерация случайного полного имени пользователя.
-        
-        Returns:
-            str: Полное имя в формате "Имя Фамилия"
-        """
+        """ Генерация случайного полного имени пользователя. 
+        Returns: str Полное имя в формате "Имя Фамилия" """
+
         return f"{faker.first_name()} {faker.last_name()}"
 
     @staticmethod
     def generation_random_password():
-        """
-        Генерация пароля, соответствующего требованиям системы.
-        
-        Создает пароль с обязательными требованиями:
-        - Минимум 1 буква
-        - Минимум 1 цифра
-        - Допустимые специальные символы: ?@#$%^&*|:
-        - Длина от 8 до 20 символов
-        
-        Returns:
-            str: Сгенерированный пароль, соответствующий всем требованиям
-        """
+        """ Генерация пароля, соответствующего требованиям системы. 
+        Returns: str Сгенерированный пароль, соответствующий всем требованиям """
 
         # Гарантируем наличие хотя бы одной буквы и одной цифры
         letters = random.choice(string.ascii_lowercase)  # одна буква
@@ -71,29 +49,18 @@ class DataGenerator:
 
     @staticmethod
     def generation_random_uuid():
-        """
-        Генерация случайного UUID для идентификации объектов.
-        
-        Returns:
-            str: UUID в строковом формате
-        """
+        """ Генерация случайного UUID для идентификации объектов. 
+        Returns: str UUID в строковом формате """
+
         return str(uuid.uuid4())
 
     @staticmethod
     def generate_user_data() -> dict:
-        """
-        Генерирует полный набор данных для создания тестового пользователя через БД.
+        """ Генерирует полный набор данных для создания тестового пользователя через БД.
+        Returns: dict  с данными пользователя для вставки в БД """
         
-        Создает словарь со всеми необходимыми полями для создания пользователя
-        в базе данных, включая временные метки и настройки по умолчанию.
-        
-        Returns:
-            dict: Словарь с данными пользователя для вставки в БД
-        """
-        from uuid import uuid4
-
         return {
-            'id': f'{uuid4()}',  # генерируем UUID как строку
+            'id': f'{uuid.uuid4()}',  # генерируем UUID как строку
             'email': DataGenerator.generation_random_email(),
             'full_name': DataGenerator.generation_random_name(),
             'password': DataGenerator.generation_random_password(),
