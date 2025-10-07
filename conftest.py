@@ -380,3 +380,16 @@ def movie_test_data():
         'genre_id': random.randint(1, 10),
         'created_at': datetime.now()
     }
+
+@pytest.fixture(scope="function")
+def review_test_data():
+    """
+    Фикстура для генерации тестовых данных отзыва для БД
+    """
+    return {
+        'text': global_faker.text(max_nb_chars=200),
+        'rating': global_faker.random_int(min=1, max=5),
+        'hidden': False,
+        'created_at': datetime.now()
+    }
+    

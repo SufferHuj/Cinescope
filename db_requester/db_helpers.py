@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from db_models.db_user_model import UserDBModel
 from db_models.db_movie_model import MovieDBModel
 from db_models.db_genre_model import GenreDBModel
+from db_models.db_review_model import ReviewDBModel
 from db_models.db_account_transaction_template_model import AccountTransactionTemplate
 
 
@@ -29,18 +30,18 @@ class DBHelper:
 
     # ==================== ОБЩИЕ МЕТОДЫ ====================
     
-    def cleanup_test_data(self, objects_to_delete: List[Union[UserDBModel, MovieDBModel, GenreDBModel]]) -> None:
+    def cleanup_test_data(self, objects_to_delete: List[Union[UserDBModel, MovieDBModel, GenreDBModel, ReviewDBModel]]) -> None:
         """
         Очищает тестовые данные из базы данных.
         
         Удаляет переданные объекты из БД. Полезно для очистки после тестов.
         
         Args:
-            objects_to_delete (List[Union[UserDBModel, MovieDBModel]]): 
+            objects_to_delete (List[Union[UserDBModel, MovieDBModel, GenreDBModel, ReviewDBModel]]): 
                 Список объектов для удаления
                 
         Example:
-            test_objects = [user1, user2, movie1, movie2]
+            test_objects = [user1, user2, movie1, movie2, review1]
             db_helper.cleanup_test_data(test_objects)
         """
         for obj in objects_to_delete:
@@ -390,6 +391,180 @@ class DBHelper:
         account = self.db_session.query(AccountTransactionTemplate).filter_by(user=user_name).first()
         if account:
             self.db_session.delete(account)
+            self.db_session.commit()
+            return True
+        return False
+
+    # ==================== МЕТОДЫ ДЛЯ РАБОТЫ С ОТЗЫВАМИ reviews ====================
+    
+    def create_test_review(self, review_data: dict) -> ReviewDBModel:
+        """
+        Создает тестовый отзыв в базе данных.
+        
+        Args:
+            review_data (dict): Словарь с данными отзыва
+            
+        Returns:
+            ReviewDBModel: Созданный объект отзыва
+            
+        Example:
+            review_data = {
+                'movie_id': 1,
+                'user_id': 'user123',
+                'text': 'Great movie!',
+                'rating': 5,
+                'hidden': False
+            }
+            review = db_helper.create_test_review(review_data)
+        """
+        review = ReviewDBModel(**review_data)
+        self.db_session.add(review)
+        self.db_session.commit()
+        self.db_session.refresh(review)
+        return review
+
+    def get_review_by_ids(self, movie_id: int, user_id: str) -> Optional[ReviewDBModel]:
+        """
+        Получает отзыв по ID фильма и ID пользователя.
+        
+        Args:
+            movie_id (int): ID фильма
+            user_id (str): ID пользователя
+            
+        Returns:
+            Optional[ReviewDBModel]: Объект отзыва или None, если не найден
+        """
+        return self.db_session.query(ReviewDBModel).filter(
+            ReviewDBModel.movie_id == movie_id,
+            ReviewDBModel.user_id == user_id
+        ).first()
+
+    def get_reviews_by_movie_id(self, movie_id: int) -> List[ReviewDBModel]:
+        """
+        Получает все отзывы для определенного фильма.
+        
+        Args:
+            movie_id (int): ID фильма
+            
+        Returns:
+            List[ReviewDBModel]: Список отзывов для фильма
+        """
+        return self.db_session.query(ReviewDBModel).filter(ReviewDBModel.movie_id == movie_id).all()
+
+    def review_exists_by_ids(self, movie_id: int, user_id: str) -> bool:
+        """
+        Проверяет существование отзыва по ID фильма и ID пользователя.
+        
+        Args:
+            movie_id (int): ID фильма
+            user_id (str): ID пользователя
+            
+        Returns:
+            bool: True, если отзыв существует, False - если нет
+        """
+        return self.db_session.query(ReviewDBModel).filter(
+            ReviewDBModel.movie_id == movie_id,
+            ReviewDBModel.user_id == user_id
+        ).first() is not None
+
+    def update_review_rating(self, movie_id: int, user_id: str, new_rating: int) -> bool:
+        """
+        Обновляет рейтинг отзыва.
+        
+        Args:
+            movie_id (int): ID фильма
+            user_id (str): ID пользователя
+            new_rating (int): Новый рейтинг
+            
+        Returns:
+            bool: True, если отзыв был обновлен, False - если не найден
+        """
+        review = self.get_review_by_ids(movie_id, user_id)
+        if review:
+            review.rating = new_rating
+            self.db_session.commit()
+            return True
+        return False
+
+    def update_review_text(self, movie_id: int, user_id: str, new_text: str) -> bool:
+        """
+        Обновляет текст отзыва.
+        
+        Args:
+            movie_id (int): ID фильма
+            user_id (str): ID пользователя
+            new_text (str): Новый текст отзыва
+            
+        Returns:
+            bool: True, если отзыв был обновлен, False - если не найден
+        """
+        review = self.get_review_by_ids(movie_id, user_id)
+        if review:
+            review.text = new_text
+            self.db_session.commit()
+            return True
+        return False
+
+    def hide_review(self, movie_id: int, user_id: str) -> bool:
+        """
+        Скрывает отзыв.
+        
+        Args:
+            movie_id (int): ID фильма
+            user_id (str): ID пользователя
+            
+        Returns:
+            bool: True, если отзыв был скрыт, False - если не найден
+        """
+        review = self.get_review_by_ids(movie_id, user_id)
+        if review:
+            review.hidden = True
+            self.db_session.commit()
+            return True
+        return False
+
+    def show_review(self, movie_id: int, user_id: str) -> bool:
+        """
+        Показывает скрытый отзыв.
+        
+        Args:
+            movie_id (int): ID фильма
+            user_id (str): ID пользователя
+            
+        Returns:
+            bool: True, если отзыв был показан, False - если не найден
+        """
+        review = self.get_review_by_ids(movie_id, user_id)
+        if review:
+            review.hidden = False
+            self.db_session.commit()
+            return True
+        return False
+
+    def delete_review(self, review: ReviewDBModel) -> None:
+        """
+        Удаляет отзыв из базы данных.
+        
+        Args:
+            review (ReviewDBModel): Объект отзыва для удаления
+        """
+        self.db_session.delete(review)
+        self.db_session.commit()
+
+    def delete_review_by_ids(self, movie_id: int, user_id: str) -> bool:
+        """
+        Удаляет отзыв по ID фильма и ID пользователя.
+        
+        Args:
+            movie_id (int): ID фильма
+            user_id (str): ID пользователя
+            
+        Returns:
+            bool: True, если отзыв был удален, False - если не найден
+        """
+        review = self.get_review_by_ids(movie_id, user_id)
+        if review:
+            self.db_session.delete(review)
             self.db_session.commit()
             return True
         return False
