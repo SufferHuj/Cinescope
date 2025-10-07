@@ -1,4 +1,16 @@
 from enum import Enum
+import enum
+
+
+class PaymentStatus(enum.Enum):
+    """
+    Перечисление статусов платежа.
+    
+    Соответствует типу public."Status" в базе данных.
+    """
+    SUCCESS = "SUCCESS"
+    INVALID_CARD = "INVALID_CARD"
+    ERROR = "ERROR"
 
 
 class Roles(str, Enum):

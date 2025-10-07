@@ -1,7 +1,4 @@
-"""
-Модель отзыва для работы с базой данных.
-Содержит SQLAlchemy модель для таблицы reviews.
-"""
+""" Модель отзыва для работы с базой данных """
 
 from sqlalchemy import Column, Integer, String, Text, Boolean, DateTime
 from sqlalchemy.orm import declarative_base
@@ -11,9 +8,7 @@ Base = declarative_base()
 
 
 class ReviewDBModel(Base):
-    """
-    Модель отзыва в БД.
-    """
+    """ Модель отзыва в БД """
 
     __tablename__ = 'reviews'
 
@@ -25,12 +20,7 @@ class ReviewDBModel(Base):
     created_at = Column(DateTime)  # timestamp(3) в БД
 
     def to_dict(self) -> Dict[str, Any]:
-        """
-        Преобразование объекта отзыва в словарь.
-        
-        Returns:
-            Dict[str, Any]: Словарь с данными отзыва для сериализации
-        """
+        """ Преобразование объекта отзыва в словарь. Returns: Словарь с данными отзыва для сериализации """
         
         return {
             'movie_id': self.movie_id,
@@ -42,10 +32,6 @@ class ReviewDBModel(Base):
         }
 
     def __repr__(self):
-        """
-        Строковое представление объекта отзыва для отладки.
-        
-        Returns:
-            str: Строковое представление с основными атрибутами отзыва
-        """
+        """ Строковое представление объекта отзыва для отладки """
+
         return f"<Review(movie_id='{self.movie_id}', user_id='{self.user_id}', rating='{self.rating}', hidden='{self.hidden}')>"
