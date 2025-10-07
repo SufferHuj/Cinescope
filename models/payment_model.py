@@ -4,11 +4,7 @@ import datetime
 
 
 class CreatePaymentResponse(BaseModel):
-    """Модель ответа при создании платежа.
-    
-    Содержит информацию о результате обработки платежа,
-    включая статус операции и дополнительные данные.
-    """
+    """ Модель ответа при создании платежа """
     
     status: str = Field(description="Статус платежа (SUCCESS, FAILED, PENDING)")
     id: Optional[str] = Field(default=None, description="Уникальный идентификатор платежа")
@@ -21,15 +17,7 @@ class CreatePaymentResponse(BaseModel):
 
     @field_validator("createdAt")
     def validate_created_at(cls, value: str) -> str:
-        """Валидатор для поля createdAt.
-        Проверяет, что дата создания соответствует формату ISO8601.
-        Args:
-            value: Строка с датой в формате ISO8601
-        Returns:
-            str: Валидная строка с датой
-        Raises:
-            ValueError: Если формат даты некорректный
-        """
+        """ Валидатор для поля createdAt. Проверяет, что дата создания соответствует формату ISO8601 """
         if value is not None:
             try:
                 datetime.datetime.fromisoformat(value)
@@ -39,11 +27,7 @@ class CreatePaymentResponse(BaseModel):
 
 
 class PaymentInfo(BaseModel):
-    """Модель информации о платеже.
-    
-    Расширенная модель платежа с полной информацией
-    для отображения в списках и детальных представлениях.
-    """
+    """ Модель информации о платеже """
     
     id: int = Field(description="Уникальный идентификатор платежа")
     status: str = Field(description="Статус платежа")
@@ -59,15 +43,7 @@ class PaymentInfo(BaseModel):
 
     @field_validator("createdAt")
     def validate_created_at(cls, value: str) -> str:
-        """Валидатор для поля createdAt.
-        Проверяет, что дата создания соответствует формату ISO8601.
-        Args:
-            value: Строка с датой в формате ISO8601
-        Returns:
-            str: Валидная строка с датой
-        Raises:
-            ValueError: Если формат даты некорректный
-        """
+        """ Валидатор для поля createdAt. Проверяет, что дата создания соответствует формату ISO8601 """
         if value is not None:
             try:
                 datetime.datetime.fromisoformat(value)
@@ -77,11 +53,7 @@ class PaymentInfo(BaseModel):
 
 
 class GetAllPaymentsResponse(BaseModel):
-    """Модель ответа при получении всех платежей с пагинацией.
-    
-    Используется для возврата списка всех платежей с метаданными
-    о пагинации (текущая страница, размер страницы, общее количество).
-    """
+    """ Модель ответа при получении всех платежей с пагинацией """
     
     payments: List[PaymentInfo] = Field(description="Список платежей на текущей странице")
     count: int = Field(ge=0, description="Общее количество платежей")
@@ -93,11 +65,7 @@ class GetAllPaymentsResponse(BaseModel):
 
 
 class PaymentErrorResponse(BaseModel):
-    """Модель ответа при возникновении ошибки в платежной системе.
-    
-    Стандартизированный формат для возврата информации об ошибках
-    платежных операций с детализацией причин неудачи.
-    """
+    """ Модель ответа при возникновении ошибки в платежной системе """
     
     error: Optional[str] = Field(default=None, description="Тип ошибки")
     message: Optional[str] = Field(default=None, description="Сообщение об ошибке")

@@ -4,11 +4,7 @@ import datetime
 
 
 class MovieData(BaseModel):
-    """Модель данных для создания и обновления фильма.
-    
-    Используется для передачи данных при создании нового фильма
-    или обновлении существующего через API.
-    """
+    """ Модель данных для создания и обновления фильма """
     
     name: str = Field(min_length=1, max_length=255, description="Название фильма")
     description: str = Field(min_length=1, description="Описание фильма")
@@ -23,26 +19,14 @@ class MovieData(BaseModel):
 
     @field_validator("price")
     def validate_price(cls, value: int) -> int:
-        """Валидатор для цены фильма.
-        Проверяет, что цена является положительным числом.
-        Args:
-            value: Цена фильма в копейках
-        Returns:
-            int: Валидная цена
-        Raises:
-            ValueError: Если цена отрицательная
-        """
+        """ Валидатор для цены фильма """
         if value < 0:
             raise ValueError("Цена фильма не может быть отрицательной")
         return value
 
 
 class CreateMovieResponse(BaseModel):
-    """Модель ответа при создании нового фильма.
-    
-    Содержит информацию о созданном фильме,
-    включая присвоенный идентификатор и все переданные данные.
-    """
+    """ Модель ответа при создании нового фильма """
     
     id: int = Field(description="Уникальный идентификатор фильма")
     name: str = Field(min_length=1, max_length=255, description="Название фильма")
@@ -59,15 +43,7 @@ class CreateMovieResponse(BaseModel):
 
     @field_validator("createdAt")
     def validate_created_at(cls, value: str) -> str:
-        """Валидатор для поля createdAt.
-        Проверяет, что дата создания соответствует формату ISO8601.
-        Args:
-            value: Строка с датой в формате ISO8601
-        Returns:
-            str: Валидная строка с датой
-        Raises:
-            ValueError: Если формат даты некорректный
-        """
+        """ Валидатор для поля createdAt. Проверяет, что дата создания соответствует формату ISO8601 """
         if value is not None:
             try:
                 datetime.datetime.fromisoformat(value)
@@ -77,11 +53,7 @@ class CreateMovieResponse(BaseModel):
 
 
 class GetMovieResponse(BaseModel):
-    """Модель ответа при получении информации о фильме.
-    
-    Расширенная версия CreateMovieResponse с дополнительными полями
-    для отображения полной информации о фильме.
-    """
+    """ Модель ответа при получении информации о фильме """
     
     id: int = Field(description="Уникальный идентификатор фильма")
     name: str = Field(min_length=1, max_length=255, description="Название фильма")
@@ -98,15 +70,7 @@ class GetMovieResponse(BaseModel):
 
     @field_validator("createdAt")
     def validate_created_at(cls, value: str) -> str:
-        """Валидатор для поля createdAt.
-        Проверяет, что дата создания соответствует формату ISO8601.
-        Args:
-            value: Строка с датой в формате ISO8601
-        Returns:
-            str: Валидная строка с датой
-        Raises:
-            ValueError: Если формат даты некорректный
-        """
+        """ Валидатор для поля createdAt. Проверяет, что дата создания соответствует формату ISO8601 """
         if value is not None:
             try:
                 datetime.datetime.fromisoformat(value)
@@ -116,11 +80,7 @@ class GetMovieResponse(BaseModel):
 
 
 class GetMoviesResponse(BaseModel):
-    """Модель ответа при получении списка фильмов с пагинацией.
-    
-    Используется для возврата списка фильмов с метаданными
-    о пагинации и фильтрации.
-    """
+    """ Модель ответа при получении списка фильмов с пагинацией """
 
     movies: List[GetMovieResponse] = Field(description="Список фильмов на текущей странице")
     count: Optional[int] = Field(default=None, ge=0, description="Общее количество фильмов")
@@ -131,11 +91,7 @@ class GetMoviesResponse(BaseModel):
 
 
 class DeleteMovieResponse(BaseModel):
-    """Модель ответа при удалении фильма.
-    
-    Содержит информацию об успешном удалении фильма
-    или сообщение об ошибке.
-    """
+    """ Модель ответа при удалении фильма """
     
     message: str = Field(description="Сообщение о результате операции удаления")
     deletedMovieId: Optional[int] = Field(default=None, description="ID удаленного фильма")
@@ -145,11 +101,7 @@ class DeleteMovieResponse(BaseModel):
 
 
 class MovieFilterParams(BaseModel):
-    """Модель параметров для фильтрации фильмов.
-    
-    Используется для передачи параметров фильтрации
-    при получении списка фильмов через API.
-    """
+    """ Модель параметров для фильтрации фильмов """
     
     page: Optional[int] = Field(default=1, ge=1, description="Номер страницы")
     pageSize: Optional[int] = Field(default=10, ge=1, le=100, description="Размер страницы")
@@ -165,16 +117,7 @@ class MovieFilterParams(BaseModel):
 
     @field_validator("minPrice", "maxPrice")
     def validate_price_range(cls, value: int, info) -> int:
-        """Валидатор для диапазона цен.
-        Проверяет, что минимальная цена не превышает максимальную.
-        Args:
-            value: Значение цены
-            info: Информация о других полях модели
-        Returns:
-            int: Валидное значение цены
-        Raises:
-            ValueError: Если минимальная цена больше максимальной
-        """
+        """ Валидатор для диапазона цен """
         if value is not None and value < 0:
             raise ValueError("Цена не может быть отрицательной")
         
@@ -188,11 +131,7 @@ class MovieFilterParams(BaseModel):
 
 
 class MovieErrorResponse(BaseModel):
-    """Модель ответа при возникновении ошибки в операциях с фильмами.
-    
-    Стандартизированный формат для возврата информации об ошибках
-    при работе с API фильмов.
-    """
+    """ Модель ответа при возникновении ошибки в операциях с фильмами """
     
     error: Optional[str] = Field(default=None, description="Сообщение об ошибке")
     message: Optional[Union[str, List[str]]] = Field(default=None, description="Дополнительное сообщение об ошибке")
