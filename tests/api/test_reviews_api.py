@@ -1,27 +1,15 @@
 import pytest
 from api.api_manager import ApiManager
 from utils.data_generator import faker as global_faker
-from models.review_model import (
-    CreateReviewResponse,
-    GetReviewResponse,
-    UpdateReviewResponse,
-    HideShowReviewResponse
-)
+from models.review_model import CreateReviewResponse, GetReviewResponse, UpdateReviewResponse, HideShowReviewResponse
 
 
 class TestReviewsAPI:
-    """
-    Класс тестов для API отзывов.
-    
-    Включает тесты для всех операций с отзывами: создание, получение,
-    обновление и удаление отзывов к фильмам различными ролями пользователей.
-    """
+    """ Класс тестов для API отзывов """
 
     # ТЕСТЫ ДЛЯ GET /movies/{movieId}/reviews
     def test_get_movie_reviews_success(self, api_manager: ApiManager, create_movie):
-        """
-        Успешное получение отзывов фильма(PUBLIC).
-        """
+        """ Успешное получение отзывов фильма(PUBLIC) """
 
         movie_id = create_movie
 
@@ -44,10 +32,7 @@ class TestReviewsAPI:
 
     # ТЕСТЫ ДЛЯ POST /movies/{movieId}/reviews
     def test_create_review_success(self, common_user, create_movie, review_data):
-        """
-        Успешное создание отзыва авторизованным пользователем.
-        Роли: USER, ADMIN, SUPER_ADMIN
-        """
+        """ Успешное создание отзыва авторизованным пользователем """
 
         movie_id = create_movie
 
@@ -71,10 +56,7 @@ class TestReviewsAPI:
 
     # ТЕСТЫ ДЛЯ PUT /movies/{movieId}/reviews
     def test_update_review_success(self, common_user, create_movie, review_data):
-        """
-        Успешное редактирование отзыва.
-        Роли: USER, ADMIN, SUPER_ADMIN
-        """
+        """ Успешное редактирование отзыва """
 
         movie_id = create_movie
 
@@ -113,10 +95,7 @@ class TestReviewsAPI:
     # ТЕСТЫ ДЛЯ PATCH /movies/{movieId}/reviews/hide/{userId}
 
     def test_hide_review_success(self, super_admin, common_user, create_movie, review_data):
-        """
-        Успешное скрытие отзыва администратором.
-        Роли: ADMIN, SUPER_ADMIN
-        """
+        """ Успешное скрытие отзыва администратором """
 
         movie_id = create_movie
 
@@ -151,10 +130,7 @@ class TestReviewsAPI:
     # ТЕСТЫ ДЛЯ PATCH /movies/{movieId}/reviews/show/{userId}
 
     def test_show_review_success(self, super_admin, common_user, create_movie, review_data):
-        """
-        Успешный показ отзыва администратором.
-        Роли: ADMIN, SUPER_ADMIN
-        """
+        """ Успешный показ отзыва администратором """
 
         movie_id = create_movie
 
@@ -190,9 +166,7 @@ class TestReviewsAPI:
     # ТЕСТЫ ДЛЯ GET /movies/{movieId}/reviews
     @pytest.mark.negative
     def test_get_movie_reviews_not_found(self, api_manager: ApiManager):
-        """
-        Получение отзывов для несуществующего фильма.
-        """
+        """ Получение отзывов для несуществующего фильма """
 
         nonexistent_movie_id = global_faker.random_number(digits=6, fix_len=True)
 
@@ -206,9 +180,7 @@ class TestReviewsAPI:
     # ТЕСТЫ ДЛЯ POST /movies/{movieId}/reviews
     @pytest.mark.negative
     def test_create_review_unauthorized(self, api_manager: ApiManager, create_movie, review_data):
-        """
-        Создание отзыва неавторизованным пользователем.
-        """
+        """ Создание отзыва неавторизованным пользователем """
 
         movie_id = create_movie
 
@@ -222,9 +194,7 @@ class TestReviewsAPI:
 
     @pytest.mark.negative
     def test_create_review_movie_not_found(self, common_user, review_data):
-        """
-        Создание отзыва для несуществующего фильма.
-        """
+        """ Создание отзыва для несуществующего фильма """
 
         fake_movie_id = global_faker.random_number(digits=6, fix_len=True)
 
@@ -238,9 +208,7 @@ class TestReviewsAPI:
 
     @pytest.mark.negative
     def test_create_review_bad_request(self, common_user, create_movie):
-        """
-        Создание отзыва с некорректными данными.
-        """
+        """ Создание отзыва с некорректными данными """
 
         movie_id = create_movie
         invalid_review_data = {
@@ -258,9 +226,7 @@ class TestReviewsAPI:
 
     @pytest.mark.negative
     def test_create_review_conflict(self, common_user, create_movie, review_data):
-        """
-        Попытка создания дублирующего отзыва.
-        """
+        """ Попытка создания дублирующего отзыва """
 
         movie_id = create_movie
 
@@ -285,9 +251,7 @@ class TestReviewsAPI:
     # ТЕСТЫ ДЛЯ PUT /movies/{movieId}/reviews
     @pytest.mark.negative
     def test_update_review_unauthorized(self, api_manager: ApiManager, create_movie, review_data):
-        """
-        Редактирование отзыва неавторизованным пользователем.
-        """
+        """ Редактирование отзыва неавторизованным пользователем """
 
         movie_id = create_movie
 
@@ -301,9 +265,7 @@ class TestReviewsAPI:
 
     @pytest.mark.negative
     def test_update_review_not_found(self, common_user, review_data):
-        """
-        Редактирование отзыва для несуществующего фильма.
-        """
+        """ Редактирование отзыва для несуществующего фильма """
         
         nonexistent_movie_id = global_faker.random_number(digits=6, fix_len=True)
 
