@@ -16,6 +16,7 @@ from utils.data_generator import faker as global_faker
 from sqlalchemy.orm import Session
 from db_requester.db_client import get_db_session
 from db_requester.db_helpers import DBHelper
+from db_models.db_payment_model import PaymentStatus
 
 
 # ФИКСТУРЫ ДЛЯ ТЕСТОВ AuthAPI и UserAPI
@@ -392,4 +393,23 @@ def review_test_data():
         'hidden': False,
         'created_at': datetime.now()
     }
+
+@pytest.fixture(scope="function")
+def payment_test_data():
+    """
+    Фикстура для генерации тестовых данных платежа для БД тестов
+    """
+    
+    def _create_payment_data(user_id=None, movie_id=None, status=None):
+        
+        return {
+            'user_id': user_id or DataGenerator.generation_random_uuid(),
+            'movie_id': movie_id or DataGenerator.generation_random_uuid(),
+            'status': status or random.choice(list(PaymentStatus)),
+            'amount': global_faker.random_int(min=100, max=2000),
+            'total': global_faker.random_int(min=100, max=2000),
+            'created_at': datetime.now()
+        }
+    
+    return _create_payment_data
     

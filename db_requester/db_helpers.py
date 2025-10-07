@@ -5,6 +5,7 @@ from db_models.db_movie_model import MovieDBModel
 from db_models.db_genre_model import GenreDBModel
 from db_models.db_review_model import ReviewDBModel
 from db_models.db_account_transaction_template_model import AccountTransactionTemplate
+from db_models.db_payment_model import PaymentDBModel
 
 
 class DBHelper:
@@ -30,7 +31,7 @@ class DBHelper:
 
     # ==================== ОБЩИЕ МЕТОДЫ ====================
     
-    def cleanup_test_data(self, objects_to_delete: List[Union[UserDBModel, MovieDBModel, GenreDBModel, ReviewDBModel]]) -> None:
+    def cleanup_test_data(self, objects_to_delete: List[Union[UserDBModel, MovieDBModel, GenreDBModel, ReviewDBModel, PaymentDBModel]]) -> None:
         """
         Очищает тестовые данные из базы данных.
         
@@ -565,6 +566,114 @@ class DBHelper:
         review = self.get_review_by_ids(movie_id, user_id)
         if review:
             self.db_session.delete(review)
+            self.db_session.commit()
+            return True
+        return False
+
+    # ==================== МЕТОДЫ ДЛЯ РАБОТЫ С ПЛАТЕЖАМИ payments ====================
+    
+    def create_test_payment(self, payment_data: dict) -> PaymentDBModel:
+        """
+        Создает тестовый платеж в базе данных.
+        
+        Args:
+            payment_data (dict): Словарь с данными платежа
+            
+        Returns:
+            PaymentDBModel: Созданный объект платежа с присвоенным ID
+            
+        Example:
+            payment_data = {
+                'user_id': 'user123',
+                'movie_id': 1,
+                'status': PaymentStatus.SUCCESS,
+                'amount': 500,
+                'total': 500,
+                'created_at': datetime.now()
+            }
+            payment = db_helper.create_test_payment(payment_data)
+        """
+        payment = PaymentDBModel(**payment_data)
+        self.db_session.add(payment)
+        self.db_session.commit()
+        self.db_session.refresh(payment)
+        return payment
+
+    def get_payment_by_id(self, payment_id: int) -> Optional[PaymentDBModel]:
+        """
+        Получает платеж по ID.
+        
+        Args:
+            payment_id (int): ID платежа
+            
+        Returns:
+            Optional[PaymentDBModel]: Объект платежа или None, если не найден
+        """
+        return self.db_session.query(PaymentDBModel).filter(PaymentDBModel.id == payment_id).first()
+
+    def get_payments_by_user_id(self, user_id: str) -> List[PaymentDBModel]:
+        """
+        Получает все платежи пользователя.
+        
+        Args:
+            user_id (str): ID пользователя
+            
+        Returns:
+            List[PaymentDBModel]: Список платежей пользователя
+        """
+        return self.db_session.query(PaymentDBModel).filter(PaymentDBModel.user_id == user_id).all()
+
+    def get_payments_by_movie_id(self, movie_id: int) -> List[PaymentDBModel]:
+        """
+        Получает все платежи за определенный фильм.
+        
+        Args:
+            movie_id (int): ID фильма
+            
+        Returns:
+            List[PaymentDBModel]: Список платежей за фильм
+        """
+        return self.db_session.query(PaymentDBModel).filter(PaymentDBModel.movie_id == movie_id).all()
+
+    def payment_exists_by_user_and_movie(self, user_id: str, movie_id: int) -> bool:
+        """
+        Проверяет существование платежа пользователя за фильм.
+        
+        Args:
+            user_id (str): ID пользователя
+            movie_id (int): ID фильма
+            
+        Returns:
+            bool: True, если платеж существует, False - если нет
+        """
+        return self.db_session.query(PaymentDBModel).filter(
+            PaymentDBModel.user_id == user_id,
+            PaymentDBModel.movie_id == movie_id
+        ).first() is not None
+
+    def delete_payment(self, payment: PaymentDBModel) -> None:
+        """
+        Удаляет платеж из базы данных.
+        
+        Args:
+            payment (PaymentDBModel): Объект платежа для удаления
+        """
+        self.db_session.delete(payment)
+        self.db_session.commit()
+
+    def delete_payment_by_id(self, payment_id: int) -> bool:
+        """
+        Удаляет платеж по ID.
+        
+        Args:
+            payment_id (int): ID платежа
+            
+        Returns:
+            bool: True, если платеж был удален, False - если не найден
+        """
+        payment = self.get_payment_by_id(payment_id)
+        if payment:
+            self.db_session.delete(payment)
             self.db_session.commit()
             return True
         return False
