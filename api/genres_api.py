@@ -3,22 +3,15 @@ from constants import MOVIES_API_BASE_URL
 
 
 class GenresAPI(CustomRequester):
-    """
-    Класс для работы с API жанров фильмов
-    """
+    """ Класс для работы с API жанров фильмов """
 
     def __init__(self, session):
-        """
-        Инициализация GenresAPI.
-        :param session: HTTP-сессия для выполнения запросов.
-        """
+        """ Инициализация GenresAPI """
+
         super().__init__(session=session, base_url=MOVIES_API_BASE_URL)
 
     def get_genres(self, expected_status=200):
-        """
-        Получение списка жанров фильмов.
-        Доступно для всех PUBLIC
-        """
+        """ Получение списка жанров фильмов """
 
         return self.send_request(
             method="GET",
@@ -27,10 +20,7 @@ class GenresAPI(CustomRequester):
         )
 
     def get_genres_by_id(self, genre_id, expected_status=200):
-        """
-        Получение жанра по ID.
-        :param genre_id: Идентификатор жанра.
-        """
+        """ Получение жанра по ID """
 
         return self.send_request(
             method="GET",
@@ -39,10 +29,7 @@ class GenresAPI(CustomRequester):
         )
 
     def create_genre(self, genre_data, expected_status=201):
-        """
-        Создание нового жанра. Требуется токен авторизации с ролью SUPER_ADMIN.
-        :param genre_data: Данные нового жанра (словарь с полем 'name').
-        """
+        """ Создание нового жанра. Требуется токен авторизации с ролью SUPER_ADMIN """
 
         return self.send_request(
             method="POST",
@@ -52,10 +39,7 @@ class GenresAPI(CustomRequester):
         )
 
     def delete_genre_by_id(self, genre_id, expected_status=200):
-        """
-        Удаление жанра по ID. Требуется токен авторизации с ролью SUPER_ADMIN.
-        :param genre_id: Идентификатор жанра для удаления.
-        """
+        """ Удаление жанра по ID. Требуется токен авторизации с ролью SUPER_ADMIN """
 
         return self.send_request(
             method="DELETE",

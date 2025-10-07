@@ -3,20 +3,14 @@ from constants import BASE_URL
 
 
 class UserAPI(CustomRequester):
-    """
-    Класс для работы с API пользователей.
-    """
+    """ Класс для работы с API пользователей """
 
     def __init__(self, session):
 
         super().__init__(session=session, base_url=BASE_URL)
 
     def get_user(self, user_id, expected_status=200):
-        """
-        Получение информации о пользователе
-        :param expected_status: Ожидаемый статус-код.
-        :param user_id: ID пользователя.
-        """
+        """ Получение информации о пользователе """
 
         return self.send_request(
             method="GET",
@@ -25,14 +19,8 @@ class UserAPI(CustomRequester):
         )
 
     def get_users(self, page_size=None, page=None, roles=None, created_at=None, expected_status=200):
-        """
-        Получение списка пользователей
-        :param page_size: Размер страницы
-        :param page: Номер страницы
-        :param roles: Роли
-        :param created_at: Сортировка по дате создания
-        :param expected_status: Ожидаемый статус-код
-        """
+        """ Получение списка пользователей """
+        
         params = {}
         if page_size is not None:
             params['pageSize'] = page_size
@@ -51,9 +39,7 @@ class UserAPI(CustomRequester):
         )
 
     def create_user(self, user_data, expected_status=201):
-        """
-        Создание пользователя
-        """
+        """ Создание пользователя """
 
         return self.send_request(
             method="POST",
@@ -63,6 +49,7 @@ class UserAPI(CustomRequester):
         )
 
     def patch_user(self, user_id, user_data, expected_status=200):
+        """ Обновление пользователя """
 
         return self.send_request(
             method="PATCH",
@@ -72,11 +59,8 @@ class UserAPI(CustomRequester):
         )
 
     def delete_user(self, user_id, expected_status=200):
-        """
-        Удаление пользователя.
-        :param user_id: ID пользователя.
-        :param expected_status: Ожидаемый статус-код.
-        """
+        """ Удаление пользователя """
+
         # Сохраняем текущие Cookie
         original_cookies = self.session.cookies.copy()
         
@@ -96,12 +80,7 @@ class UserAPI(CustomRequester):
         return response
 
     def clean_up_user(self, user_id):
-        """
-        Метод для очистки (удаления) пользователя после теста.
-        Использует метод delete_user.
-        :param user_id: ID пользователя, которого нужно удалить.
-        """
-
+        """ Метод для удаления пользователя после теста """
 
         try:
             self.delete_user(user_id=user_id, expected_status=200)

@@ -7,15 +7,10 @@ from api.payment_api import PaymentAPI
 
 
 class ApiManager:
-    """
-    Класс для управления API-классами с единой HTTP-сессией
-    """
+    """ Класс для управления API-классами с единой HTTP-сессией """
 
     def __init__(self, session):
-        """
-        Инициализация ApiManager.
-        :param session: HTTP-сессия, используемая всеми API-классами.
-        """
+        """ Инициализация ApiManager :param session: HTTP-сессия, используемая всеми API-классами """
 
         self.session = session
         self.auth_api = AuthAPI(session)
@@ -26,7 +21,6 @@ class ApiManager:
         self.payment_api = PaymentAPI(session)
 
     def close_session(self):
-        """
-        Закрывает HTTP-сессию для освобождения ресурсов.
-        """
+        """ Закрывает HTTP-сессию для освобождения ресурсов """
+        
         self.session.close()
