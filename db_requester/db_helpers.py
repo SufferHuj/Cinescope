@@ -611,46 +611,6 @@ class DBHelper:
         """
         return self.db_session.query(PaymentDBModel).filter(PaymentDBModel.id == payment_id).first()
 
-    def get_payments_by_user_id(self, user_id: str) -> List[PaymentDBModel]:
-        """
-        Получает все платежи пользователя.
-        
-        Args:
-            user_id (str): ID пользователя
-            
-        Returns:
-            List[PaymentDBModel]: Список платежей пользователя
-        """
-        return self.db_session.query(PaymentDBModel).filter(PaymentDBModel.user_id == user_id).all()
-
-    def get_payments_by_movie_id(self, movie_id: int) -> List[PaymentDBModel]:
-        """
-        Получает все платежи за определенный фильм.
-        
-        Args:
-            movie_id (int): ID фильма
-            
-        Returns:
-            List[PaymentDBModel]: Список платежей за фильм
-        """
-        return self.db_session.query(PaymentDBModel).filter(PaymentDBModel.movie_id == movie_id).all()
-
-    def payment_exists_by_user_and_movie(self, user_id: str, movie_id: int) -> bool:
-        """
-        Проверяет существование платежа пользователя за фильм.
-        
-        Args:
-            user_id (str): ID пользователя
-            movie_id (int): ID фильма
-            
-        Returns:
-            bool: True, если платеж существует, False - если нет
-        """
-        return self.db_session.query(PaymentDBModel).filter(
-            PaymentDBModel.user_id == user_id,
-            PaymentDBModel.movie_id == movie_id
-        ).first() is not None
-
     def delete_payment(self, payment: PaymentDBModel) -> None:
         """
         Удаляет платеж из базы данных.
