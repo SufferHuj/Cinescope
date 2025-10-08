@@ -116,6 +116,16 @@ Cinescope/
 │   └── ui/                  # UI тестирование
 │       └── test_login_page.py      # Тесты страницы входа
 │
+├── 🔧 Test Fixtures
+│   ├── __init__.py          # Инициализация пакета фикстур
+│   ├── base_fixtures.py     # Базовые фикстуры (HTTP сессии, API менеджеры)
+│   ├── auth_fixtures.py     # Фикстуры аутентификации (пользователи, роли)
+│   ├── db_fixtures.py       # Фикстуры для работы с БД (сессии, хелперы)
+│   ├── genres_fixtures.py   # Фикстуры для тестирования жанров
+│   ├── movies_fixtures.py   # Фикстуры для создания и управления фильмами
+│   ├── payment_fixtures.py  # Фикстуры для тестирования платежной системы
+│   └── reviews_fixtures.py  # Фикстуры для тестирования системы отзывов
+│
 ├── 🛠️ Utilities & Helpers
 │   ├── custom_requester/    # HTTP клиент
 │   │   └── custom_requester.py     # Кастомизированный HTTP requester
