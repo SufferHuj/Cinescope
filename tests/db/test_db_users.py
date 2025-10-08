@@ -9,8 +9,8 @@ class TestDBUsers:
         # Генерируем тестовые данные пользователя
         user_data = DataGenerator.generate_user_data()
         
-        # Создание пользователя
-        created_user = db_helper.create_test_user(user_data)
+        # Создание пользователя через новый API
+        created_user = db_helper.users.create_test_user(user_data)
         
         try:
             # Проверяем создание
@@ -22,46 +22,46 @@ class TestDBUsers:
             assert created_user.banned == user_data['banned']
             assert created_user.roles == user_data['roles']
             
-            # Проверяем чтение по ID
-            retrieved_user = db_helper.get_user_by_id(created_user.id)
+            # Проверяем чтение по ID через новый API
+            retrieved_user = db_helper.users.get_user_by_id(created_user.id)
             assert retrieved_user is not None
             assert retrieved_user.email == user_data['email']
             assert retrieved_user.full_name == user_data['full_name']
             
-            # Проверяем чтение по email
-            user_by_email = db_helper.get_user_by_email(created_user.email)
+            # Проверяем чтение по email через новый API
+            user_by_email = db_helper.users.get_user_by_email(created_user.email)
             assert user_by_email is not None
             assert user_by_email.id == created_user.id
             
-            # Проверяем существование пользователя
-            assert db_helper.user_exists_by_email(created_user.email)
+            # Проверяем существование пользователя через новый API
+            assert db_helper.users.user_exists_by_email(created_user.email)
 
             # Тестируем поиск несуществующего пользователя по ID
             fake_user_id = f"{faker.uuid4()}"
-            non_existent_user = db_helper.get_user_by_id(fake_user_id)
+            non_existent_user = db_helper.users.get_user_by_id(fake_user_id)
             assert non_existent_user is None
             
             # Тестируем поиск несуществующего пользователя по email
             fake_email = f"nonexistent_{faker.uuid4()}@example.com"
-            non_existent_email_user = db_helper.get_user_by_email(fake_email)
+            non_existent_email_user = db_helper.users.get_user_by_email(fake_email)
             assert non_existent_email_user is None
             
         finally:
-            # Удаляем тестового пользователя
+            # Удаляем тестового пользователя через модульный API
             db_helper.cleanup_test_data([created_user])
 
     def test_user_count_methods(self, db_helper):
         """ Тест методов подсчета количества пользователей """
 
-        # Получаем изначальное количество пользователей ДО создания тестового пользователя
+        # Получаем изначальное количество пользователей ДО создания тестового пользователя через модульный API
         initial_users_count = db_helper.get_total_users_count()
         
-        # Создаем тестового пользователя
+        # Создаем тестового пользователя через новый API
         user_data = DataGenerator.generate_user_data()
-        created_user = db_helper.create_test_user(user_data)
+        created_user = db_helper.users.create_test_user(user_data)
         
         try:
-            # Проверяем, что количество увеличилось на 1 после создания пользователя
+            # Проверяем, что количество увеличилось на 1 после создания пользователя через модульный API
             current_users_count = db_helper.get_total_users_count()
             assert current_users_count == initial_users_count + 1, \
                 f"Ожидалось {initial_users_count + 1} пользователей, получено {current_users_count}"
@@ -71,7 +71,7 @@ class TestDBUsers:
             assert current_users_count >= 0
             
         finally:
-            # Очищаем тестовые данные
+            # Очищаем тестовые данные через модульный API
             db_helper.cleanup_test_data([created_user])
 
     def test_multiple_users_operations(self, db_helper):
@@ -91,9 +91,10 @@ class TestDBUsers:
         user_data_3['full_name'] = f"Пользователь 3 - {faker.name()}"
         user_data_3['roles'] = '{ADMIN}'
         
-        user1 = db_helper.create_test_user(user_data_1)
-        user2 = db_helper.create_test_user(user_data_2)
-        user3 = db_helper.create_test_user(user_data_3)
+        # Создаем пользователей через новый API
+        user1 = db_helper.users.create_test_user(user_data_1)
+        user2 = db_helper.users.create_test_user(user_data_2)
+        user3 = db_helper.users.create_test_user(user_data_3)
 
         try:
             # Проверяем, что все пользователи созданы
@@ -110,30 +111,30 @@ class TestDBUsers:
             assert user2.banned is True
             assert user3.roles == '{ADMIN}'
             
-            # Проверяем поиск каждого пользователя
-            found_user1 = db_helper.get_user_by_email(user1.email)
-            found_user2 = db_helper.get_user_by_email(user2.email)
-            found_user3 = db_helper.get_user_by_email(user3.email)
+            # Проверяем поиск каждого пользователя через новый API
+            found_user1 = db_helper.users.get_user_by_email(user1.email)
+            found_user2 = db_helper.users.get_user_by_email(user2.email)
+            found_user3 = db_helper.users.get_user_by_email(user3.email)
             
             assert found_user1.id == user1.id
             assert found_user2.id == user2.id
             assert found_user3.id == user3.id
 
         finally:
-            # Очищаем тестовые данные
+            # Очищаем тестовые данные через модульный API
             db_helper.cleanup_test_data([user1, user2, user3])
 
     def test_user_email_uniqueness(self, db_helper):
         """ Тест уникальности email адресов """
 
-        # Создаем первого пользователя
+        # Создаем первого пользователя через новый API
         user_data_1 = DataGenerator.generate_user_data()
-        user1 = db_helper.create_test_user(user_data_1)
+        user1 = db_helper.users.create_test_user(user_data_1)
         user2 = None
         
         try:
-            # Проверяем, что пользователь создан
-            assert db_helper.user_exists_by_email(user1.email)
+            # Проверяем, что пользователь создан через новый API
+            assert db_helper.users.user_exists_by_email(user1.email)
             
             # Пытаемся создать второго пользователя с тем же email
             user_data_2 = DataGenerator.generate_user_data()
@@ -142,7 +143,7 @@ class TestDBUsers:
             # Отключаем вызов исключения при дублирование email
             exception_occurred = False
             try:
-                user2 = db_helper.create_test_user(user_data_2)
+                user2 = db_helper.users.create_test_user(user_data_2)
             except Exception as e:
                 # Ожидаемое поведение - исключение при дублировании email
                 exception_occurred = True
@@ -156,7 +157,7 @@ class TestDBUsers:
                 assert user1.email == user2.email
                 
         finally:
-            # Очищаем тестовые данные
+            # Очищаем тестовые данные через модульный API
             users_to_cleanup = [user1]
             if user2:
                 users_to_cleanup.append(user2)

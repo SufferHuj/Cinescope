@@ -30,13 +30,13 @@ def db_helper(db_session) -> DBHelper:
 def created_test_user(db_helper):
     """Фикстура для создания тестового пользователя в БД"""
 
-    user = db_helper.create_test_user(DataGenerator.generate_user_data())
+    user = db_helper.users.create_test_user(DataGenerator.generate_user_data())
     
     yield user
 
     # Cleanup после теста
-    if db_helper.get_user_by_id(user.id):
-        db_helper.delete_user(user)
+    if db_helper.users.get_user_by_id(user.id):
+        db_helper.users.delete_user(user)
 
 
 @pytest.fixture(scope="function")

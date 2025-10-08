@@ -10,8 +10,8 @@ class TestDBPayments:
 
         # Создаем тестового пользователя и фильм
         user_data = DataGenerator.generate_user_data()
-        created_user = db_helper.create_test_user(user_data)
-        created_movie = db_helper.create_test_movie(movie_test_data)
+        created_user = db_helper.users.create_test_user(user_data)
+        created_movie = db_helper.movies.create_test_movie(movie_test_data)
         
         # Создаем данные платежа с помощью фикстуры
         payment_data = payment_test_data(
@@ -19,7 +19,7 @@ class TestDBPayments:
             movie_id=created_movie.id
         )
         
-        payment = db_helper.create_test_payment(payment_data)
+        payment = db_helper.payments.create_test_payment(payment_data)
         
         try:
             # Проверяем, что платеж создан
@@ -38,8 +38,8 @@ class TestDBPayments:
 
         # Создаем тестового пользователя и фильм
         user_data = DataGenerator.generate_user_data()
-        created_user = db_helper.create_test_user(user_data)
-        created_movie = db_helper.create_test_movie(movie_test_data)
+        created_user = db_helper.users.create_test_user(user_data)
+        created_movie = db_helper.movies.create_test_movie(movie_test_data)
         
         # Создаем данные платежа с помощью фикстуры
         payment_data = payment_test_data(
@@ -47,11 +47,11 @@ class TestDBPayments:
             movie_id=created_movie.id
         )
         
-        created_payment = db_helper.create_test_payment(payment_data)
+        created_payment = db_helper.payments.create_test_payment(payment_data)
         
         try:
             # Получаем платеж по ID
-            retrieved_payment = db_helper.get_payment_by_id(created_payment.id)
+            retrieved_payment = db_helper.payments.get_payment_by_id(created_payment.id)
             
             # Проверяем, что платеж найден и данные совпадают
             assert retrieved_payment is not None
@@ -66,8 +66,8 @@ class TestDBPayments:
         """ Тест создания платежа со статусом INVALID_CARD """
         # Создаем тестового пользователя и фильм
         user_data = DataGenerator.generate_user_data()
-        created_user = db_helper.create_test_user(user_data)
-        created_movie = db_helper.create_test_movie(movie_test_data)
+        created_user = db_helper.users.create_test_user(user_data)
+        created_movie = db_helper.movies.create_test_movie(movie_test_data)
         
         # Создаем данные платежа со статусом INVALID_CARD
         payment_data = payment_test_data(
@@ -78,7 +78,7 @@ class TestDBPayments:
         
         try:
             # Создаем платеж
-            created_payment = db_helper.create_test_payment(payment_data)
+            created_payment = db_helper.payments.create_test_payment(payment_data)
             
             # Проверяем, что платеж создан с правильным статусом
             assert created_payment is not None
@@ -93,8 +93,8 @@ class TestDBPayments:
         """ Тест создания платежа со статусом ERROR """
         # Создаем тестового пользователя и фильм
         user_data = DataGenerator.generate_user_data()
-        created_user = db_helper.create_test_user(user_data)
-        created_movie = db_helper.create_test_movie(movie_test_data)
+        created_user = db_helper.users.create_test_user(user_data)
+        created_movie = db_helper.movies.create_test_movie(movie_test_data)
         
         # Создаем данные платежа со статусом ERROR
         payment_data = payment_test_data(
@@ -105,7 +105,7 @@ class TestDBPayments:
         
         try:
             # Создаем платеж
-            created_payment = db_helper.create_test_payment(payment_data)
+            created_payment = db_helper.payments.create_test_payment(payment_data)
             
             # Проверяем, что платеж создан с правильным статусом
             assert created_payment is not None
@@ -120,8 +120,8 @@ class TestDBPayments:
         """ Тест успешного удаления платежа """
         # Создаем тестового пользователя и фильм
         user_data = DataGenerator.generate_user_data()
-        created_user = db_helper.create_test_user(user_data)
-        created_movie = db_helper.create_test_movie(movie_test_data)
+        created_user = db_helper.users.create_test_user(user_data)
+        created_movie = db_helper.movies.create_test_movie(movie_test_data)
         
         # Создаем платеж с помощью фикстуры
         payment_data = payment_test_data(
@@ -129,14 +129,14 @@ class TestDBPayments:
             movie_id=created_movie.id
         )
         
-        payment = db_helper.create_test_payment(payment_data)
+        payment = db_helper.payments.create_test_payment(payment_data)
         
         try:
             # Удаляем платеж
-            db_helper.delete_payment(payment)
+            db_helper.payments.delete_payment(payment)
             
             # Проверяем, что платеж удален
-            retrieved_payment = db_helper.get_payment_by_id(payment.id)
+            retrieved_payment = db_helper.payments.get_payment_by_id(payment.id)
             assert retrieved_payment is None
         finally:
             # Удаляем оставшиеся тестовые данные
