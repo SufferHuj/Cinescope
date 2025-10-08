@@ -30,7 +30,6 @@ class TestAuthAPI:
         response = api_manager.auth_api.login_user(login_data, expected_status=[200, 201])
         response_data = LoginUserResponse(**response.json())
 
-        assert response.status_code in [200, 201]
         assert response_data.user.email == registered_user["email"], "Email не совпадает"
         assert response_data.user.fullName == registered_user["fullName"], "Имя не совпадает"
         assert response_data.user.roles == registered_user["roles"], "Роли не совпадают"
@@ -51,7 +50,6 @@ class TestAuthAPI:
         response = api_manager.auth_api.login_user(login_data, expected_status=401)
         error_data = ErrorResponse(**response.json())
 
-        assert response.status_code == 401
         assert error_data.error is not None, "Сообщение об ошибке отсутствует в ответе"
         assert "Unauthorized" in error_data.error, "Сообщение об ошибке некорректное"
 
@@ -67,7 +65,6 @@ class TestAuthAPI:
         response = api_manager.auth_api.login_user(login_data, expected_status=401)
         error_data = ErrorResponse(**response.json())
 
-        assert response.status_code == 401
         assert error_data.error is not None, "Сообщение об ошибке отсутствует в ответе"
         assert "Unauthorized" in error_data.error, "Сообщение об ошибке некорректное"
 
@@ -80,6 +77,5 @@ class TestAuthAPI:
         response = api_manager.auth_api.login_user(login_data, expected_status=401)
         error_data = ErrorResponse(**response.json())
 
-        assert response.status_code == 401
         assert error_data.error is not None, "Сообщение об ошибке отсутствует в ответе"
         assert "Unauthorized" in error_data.error, "Сообщение об ошибке некорректное"
