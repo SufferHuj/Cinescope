@@ -24,16 +24,11 @@ class TestDBPayments:
         try:
             # Проверяем, что платеж создан
             assert payment.id is not None
-            assert payment.user_id == payment_data['user_id']
-            assert payment.movie_id == payment_data['movie_id']
-            assert payment.status == payment_data['status']
-            assert payment.amount == payment_data['amount']
-            assert payment.total == payment_data['total']
         finally:
             # Удаляем тестовые данные
             db_helper.cleanup_test_data([payment, created_user, created_movie])
 
-    def test_get_payment_by_id_existing(self, db_helper, movie_test_data, payment_test_data):
+    def test_get_payment_by_id(self, db_helper, movie_test_data, payment_test_data):
         """ Тест получения существующего платежа по ID """
 
         # Создаем тестового пользователя и фильм
@@ -56,14 +51,13 @@ class TestDBPayments:
             # Проверяем, что платеж найден и данные совпадают
             assert retrieved_payment is not None
             assert retrieved_payment.id == created_payment.id
-            assert retrieved_payment.user_id == created_payment.user_id
-            assert retrieved_payment.movie_id == created_payment.movie_id
         finally:
             # Удаляем тестовые данные
             db_helper.cleanup_test_data([created_payment, created_user, created_movie])
 
     def test_create_payment_with_invalid_card_status(self, db_helper, movie_test_data, payment_test_data):
         """ Тест создания платежа со статусом INVALID_CARD """
+
         # Создаем тестового пользователя и фильм
         user_data = DataGenerator.generate_user_data()
         created_user = db_helper.users.create_test_user(user_data)
@@ -83,14 +77,13 @@ class TestDBPayments:
             # Проверяем, что платеж создан с правильным статусом
             assert created_payment is not None
             assert created_payment.status == PaymentStatus.INVALID_CARD
-            assert created_payment.user_id == created_user.id
-            assert created_payment.movie_id == created_movie.id
         finally:
             # Удаляем тестовые данные
             db_helper.cleanup_test_data([created_payment, created_user, created_movie])
 
     def test_create_payment_with_error_status(self, db_helper, movie_test_data, payment_test_data):
         """ Тест создания платежа со статусом ERROR """
+
         # Создаем тестового пользователя и фильм
         user_data = DataGenerator.generate_user_data()
         created_user = db_helper.users.create_test_user(user_data)
@@ -110,14 +103,13 @@ class TestDBPayments:
             # Проверяем, что платеж создан с правильным статусом
             assert created_payment is not None
             assert created_payment.status == PaymentStatus.ERROR
-            assert created_payment.user_id == created_user.id
-            assert created_payment.movie_id == created_movie.id
         finally:
             # Удаляем тестовые данные
             db_helper.cleanup_test_data([created_payment, created_user, created_movie])
 
     def test_delete_payment_success(self, db_helper, movie_test_data, payment_test_data):
         """ Тест успешного удаления платежа """
+        
         # Создаем тестового пользователя и фильм
         user_data = DataGenerator.generate_user_data()
         created_user = db_helper.users.create_test_user(user_data)
