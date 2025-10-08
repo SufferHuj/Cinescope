@@ -13,7 +13,7 @@ class TestDBAccountsTransactionTemplate:
         initial_balance = faker.random_int(min=1000, max=5000)
         
         # Создание аккаунта
-        account = db_helper.create_test_account(user_name, initial_balance)
+        account = db_helper.accounts.create_test_account(user_name, initial_balance)
         
         try:
             # Проверяем создание
@@ -21,19 +21,19 @@ class TestDBAccountsTransactionTemplate:
             assert account.balance == initial_balance
             
             # Проверяем чтение по имени пользователя
-            retrieved_account = db_helper.get_account_by_user(user_name)
+            retrieved_account = db_helper.accounts.get_account_by_user(user_name)
             assert retrieved_account is not None
             assert retrieved_account.user == user_name
             assert retrieved_account.balance == initial_balance
             
             # Проверяем существование аккаунта
-            assert db_helper.account_exists_by_user(user_name)
+            assert db_helper.accounts.account_exists_by_user(user_name)
             
             # Тестируем поиск несуществующего аккаунта
             fake_user = f"NonExistent_{faker.uuid4()}"
-            non_existent_account = db_helper.get_account_by_user(fake_user)
+            non_existent_account = db_helper.accounts.get_account_by_user(fake_user)
             assert non_existent_account is None
-            assert not db_helper.account_exists_by_user(fake_user)
+            assert not db_helper.accounts.account_exists_by_user(fake_user)
             
         finally:
             # Удаляем тестовый аккаунт
@@ -45,7 +45,7 @@ class TestDBAccountsTransactionTemplate:
         user_name = f"BalanceUser_{faker.uuid4()}"
         initial_balance = 1000
         
-        account = db_helper.create_test_account(user_name, initial_balance)
+        account = db_helper.accounts.create_test_account(user_name, initial_balance)
         
         try:
             # Проверяем начальный баланс
@@ -53,10 +53,10 @@ class TestDBAccountsTransactionTemplate:
             
             # Обновляем баланс
             new_balance = 1500
-            db_helper.update_account_balance(user_name, new_balance)
+            db_helper.accounts.update_account_balance(user_name, new_balance)
             
             # Проверяем обновленный баланс
-            updated_account = db_helper.get_account_by_user(user_name)
+            updated_account = db_helper.accounts.get_account_by_user(user_name)
             assert updated_account.balance == new_balance
             
         finally:
@@ -74,7 +74,7 @@ class TestDBAccountsTransactionTemplate:
         
         accounts = []
         for user_name, balance in accounts_data:
-            account = db_helper.create_test_account(user_name, balance)
+            account = db_helper.accounts.create_test_account(user_name, balance)
             accounts.append(account)
         
         try:
@@ -91,7 +91,7 @@ class TestDBAccountsTransactionTemplate:
                 
             # Проверяем поиск каждого аккаунта
             for account in accounts:
-                found_account = db_helper.get_account_by_user(account.user)
+                found_account = db_helper.accounts.get_account_by_user(account.user)
                 assert found_account is not None
                 assert found_account.user == account.user
                 assert found_account.balance == account.balance
@@ -106,14 +106,14 @@ class TestDBAccountsTransactionTemplate:
         stan_user = f"Stan_{faker.random_int(min=10000, max=99999)}"
         bob_user = f"Bob_{faker.random_int(min=10000, max=99999)}"
         
-        stan = db_helper.create_test_account(stan_user, 1000)
-        bob = db_helper.create_test_account(bob_user, 500)
+        stan = db_helper.accounts.create_test_account(stan_user, 1000)
+        bob = db_helper.accounts.create_test_account(bob_user, 500)
         
         def transfer_money(from_user: str, to_user: str, amount: int):
             """ Переводит деньги с одного счета на другой """
 
-            from_account = db_helper.get_account_by_user(from_user)
-            to_account = db_helper.get_account_by_user(to_user)
+            from_account = db_helper.accounts.get_account_by_user(from_user)
+            to_account = db_helper.accounts.get_account_by_user(to_user)
 
             if not from_account or not to_account:
                 raise ValueError("Один из аккаунтов не найден")
@@ -126,8 +126,8 @@ class TestDBAccountsTransactionTemplate:
             new_from_balance = from_account.balance - amount
             new_to_balance = to_account.balance + amount
             
-            db_helper.update_account_balance(from_user, new_from_balance)
-            db_helper.update_account_balance(to_user, new_to_balance)
+            db_helper.accounts.update_account_balance(from_user, new_from_balance)
+            db_helper.accounts.update_account_balance(to_user, new_to_balance)
 
         try:
             # Проверяем начальные балансы
@@ -138,8 +138,8 @@ class TestDBAccountsTransactionTemplate:
             transfer_money(from_user=stan.user, to_user=bob.user, amount=200)
 
             # Обновляем объекты из базы данных
-            updated_stan = db_helper.get_account_by_user(stan.user)
-            updated_bob = db_helper.get_account_by_user(bob.user)
+            updated_stan = db_helper.accounts.get_account_by_user(stan.user)
+            updated_bob = db_helper.accounts.get_account_by_user(bob.user)
 
             # Проверяем, что балансы изменились
             assert updated_stan.balance == 800
@@ -164,7 +164,7 @@ class TestDBAccountsTransactionTemplate:
         user_name = f"DictUser_{faker.uuid4()}"
         balance = 750
         
-        account = db_helper.create_test_account(user_name, balance)
+        account = db_helper.accounts.create_test_account(user_name, balance)
         
         try:
             # Тестируем метод to_dict
