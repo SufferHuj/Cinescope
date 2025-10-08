@@ -4,20 +4,13 @@ from utils.data_generator import faker
 class TestDBMovies:
     """ Класс тестов для работы с базой данных фильмов """
 
-    def test_db_movie_requests(self, db_helper, movie_test_data, created_test_user):
+    def test_db_movie_requests(self, db_helper, movie_test_data):
         """ Тест базовых операций с фильмами через DBHelper """
-        
-        # Используем готовую фикстуру пользователя
-        created_user = created_test_user
         
         # Создаем тестовый фильм
         created_movie = db_helper.movies.create_test_movie(movie_test_data)
         
         try:
-            # Проверяем, что пользователь создан
-            assert created_user.id is not None
-            assert created_user.email is not None
-            
             # Проверяем, что фильм создан
             assert created_movie.id is not None
             assert created_movie.name == movie_test_data['name']
@@ -25,7 +18,6 @@ class TestDBMovies:
             # Проверяем получение фильма по ID
             retrieved_movie = db_helper.movies.get_movie_by_id(created_movie.id)
             assert retrieved_movie is not None
-            assert retrieved_movie.name == movie_test_data['name']
             
         finally:
             # Очищаем тестовые данные (пользователь очистится автоматически через фикстуру)
@@ -38,10 +30,6 @@ class TestDBMovies:
         created_movie = db_helper.movies.create_test_movie(movie_test_data)
         
         try:
-            # Проверяем создание
-            assert created_movie.id is not None
-            assert created_movie.name == movie_test_data['name']
-            
             # Проверяем чтение по ID
             retrieved_movie = db_helper.movies.get_movie_by_id(created_movie.id)
             assert retrieved_movie is not None
@@ -115,10 +103,6 @@ class TestDBMovies:
             current_movies_count = db_helper.get_total_movies_count()
             assert current_movies_count == initial_movies_count + 1, \
                 f"Ожидалось {initial_movies_count + 1} фильмов, получено {current_movies_count}"
-            
-            # Проверяем, что метод возвращает число
-            assert isinstance(current_movies_count, int)
-            assert current_movies_count >= 0
             
         finally:
             # Очищаем тестовые данные

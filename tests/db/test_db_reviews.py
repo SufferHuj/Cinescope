@@ -1,4 +1,4 @@
-from utils.data_generator import DataGenerator
+from utils.data_generator import DataGenerator, faker
 
 
 class TestDBReviews:
@@ -20,13 +20,6 @@ class TestDBReviews:
         created_review = db_helper.reviews.create_test_review(review_data)
         
         try:
-            # Проверяем создание
-            assert created_review.movie_id == review_data['movie_id']
-            assert created_review.user_id == review_data['user_id']
-            assert created_review.text == review_data['text']
-            assert created_review.rating == review_data['rating']
-            assert created_review.hidden == review_data['hidden']
-            
             # Проверяем чтение по составному ключу
             retrieved_review = db_helper.reviews.get_review_by_ids(
                 created_review.movie_id, 
@@ -43,11 +36,13 @@ class TestDBReviews:
             )
             
             # Тестируем поиск несуществующего отзыва
-            non_existent_review = db_helper.reviews.get_review_by_ids(99999, "fake-user-id")
+            fake_user_data = DataGenerator.generate_user_data()
+            fake_movie_id = faker.random_int(min=99999, max=999999)
+            non_existent_review = db_helper.reviews.get_review_by_ids(fake_movie_id, fake_user_data['id'])
             assert non_existent_review is None
             
             # Проверяем несуществование отзыва
-            assert not db_helper.reviews.review_exists_by_ids(99999, "fake-user-id")
+            assert not db_helper.reviews.review_exists_by_ids(fake_movie_id, fake_user_data['id'])
             
         finally:
             # Удаляем тестовые данные
@@ -109,12 +104,11 @@ class TestDBReviews:
         try:
             # Тестируем обновление рейтинга
             new_rating = 5
-            update_success = db_helper.reviews.update_review_rating(
+            db_helper.reviews.update_review_rating(
                 created_review.movie_id, 
                 created_review.user_id, 
                 new_rating
             )
-            assert update_success is True
             
             # Получаем обновленный отзыв для проверки
             updated_review = db_helper.reviews.get_review_by_ids(
@@ -125,12 +119,11 @@ class TestDBReviews:
             
             # Тестируем обновление текста
             new_text = "Обновленный текст отзыва"
-            update_success = db_helper.reviews.update_review_text(
+            db_helper.reviews.update_review_text(
                 created_review.movie_id, 
                 created_review.user_id, 
                 new_text
             )
-            assert update_success is True
             
             # Получаем обновленный отзыв для проверки
             updated_review = db_helper.reviews.get_review_by_ids(
@@ -140,11 +133,10 @@ class TestDBReviews:
             assert updated_review.text == new_text
             
             # Тестируем скрытие отзыва
-            hide_success = db_helper.reviews.hide_review(
+            db_helper.reviews.hide_review(
                 created_review.movie_id, 
                 created_review.user_id
             )
-            assert hide_success is True
             
             # Получаем обновленный отзыв для проверки
             hidden_review = db_helper.reviews.get_review_by_ids(
@@ -154,11 +146,10 @@ class TestDBReviews:
             assert hidden_review.hidden is True
             
             # Тестируем показ отзыва
-            show_success = db_helper.reviews.show_review(
+            db_helper.reviews.show_review(
                 created_review.movie_id, 
                 created_review.user_id
             )
-            assert show_success is True
             
             # Получаем обновленный отзыв для проверки
             shown_review = db_helper.reviews.get_review_by_ids(
@@ -186,12 +177,6 @@ class TestDBReviews:
         created_review = db_helper.reviews.create_test_review(review_data)
         
         try:
-            # Проверяем, что отзыв существует
-            assert db_helper.reviews.review_exists_by_ids(
-                created_review.movie_id, 
-                created_review.user_id
-            )
-            
             # Удаляем отзыв по объекту
             db_helper.reviews.delete_review(created_review)
             

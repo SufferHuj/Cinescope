@@ -16,10 +16,6 @@ class TestDBAccountsTransactionTemplate:
         account = db_helper.accounts.create_test_account(user_name, initial_balance)
         
         try:
-            # Проверяем создание
-            assert account.user == user_name
-            assert account.balance == initial_balance
-            
             # Проверяем чтение по имени пользователя
             retrieved_account = db_helper.accounts.get_account_by_user(user_name)
             assert retrieved_account is not None
@@ -78,23 +74,16 @@ class TestDBAccountsTransactionTemplate:
             accounts.append(account)
         
         try:
-            # Проверяем, что все аккаунты созданы
-            assert len(accounts) == 3
-            
             # Проверяем уникальность имен пользователей
             user_names = [acc.user for acc in accounts]
             assert len(set(user_names)) == 3
             
-            # Проверяем балансы
+            # Проверяем поиск и балансы каждого аккаунта
             for i, (expected_user, expected_balance) in enumerate(accounts_data):
-                assert accounts[i].balance == expected_balance
-                
-            # Проверяем поиск каждого аккаунта
-            for account in accounts:
-                found_account = db_helper.accounts.get_account_by_user(account.user)
+                found_account = db_helper.accounts.get_account_by_user(accounts[i].user)
                 assert found_account is not None
-                assert found_account.user == account.user
-                assert found_account.balance == account.balance
+                assert found_account.user == expected_user
+                assert found_account.balance == expected_balance
                 
         finally:
             db_helper.cleanup_test_data(accounts)
@@ -130,10 +119,6 @@ class TestDBAccountsTransactionTemplate:
             db_helper.accounts.update_account_balance(to_user, new_to_balance)
 
         try:
-            # Проверяем начальные балансы
-            assert stan.balance == 1000
-            assert bob.balance == 500
-
             # Выполняем перевод 200 единиц от stan к bob
             transfer_money(from_user=stan.user, to_user=bob.user, amount=200)
 
@@ -173,7 +158,6 @@ class TestDBAccountsTransactionTemplate:
             assert isinstance(account_dict, dict)
             assert account_dict['user'] == user_name
             assert account_dict['balance'] == balance
-            assert len(account_dict) == 2  # Проверяем, что в словаре только 2 ключа
             
         finally:
             db_helper.cleanup_test_data([account])

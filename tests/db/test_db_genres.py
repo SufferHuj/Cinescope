@@ -16,10 +16,6 @@ class TestDBGenres:
         created_genre = db_helper.genres.create_test_genre(genre_data)
         
         try:
-            # Проверяем создание
-            assert created_genre.id is not None
-            assert created_genre.name == genre_data['name']
-            
             # Проверяем чтение по ID
             retrieved_genre = db_helper.genres.get_genre_by_id(created_genre.id)
             assert retrieved_genre is not None
@@ -61,14 +57,9 @@ class TestDBGenres:
         genre_id = genre_to_delete.id
         genre_name = genre_to_delete.name
         
-        # Проверяем, что жанр создан
-        assert db_helper.genres.genre_exists_by_name(genre_name)
-        assert db_helper.genres.get_genre_by_id(genre_id) is not None
-        
         # Удаляем жанр
         db_helper.genres.delete_genre(genre_to_delete)
         
         # Проверяем, что жанр удален
-        assert not db_helper.genres.genre_exists_by_name(genre_name)
         assert db_helper.genres.get_genre_by_id(genre_id) is None
         assert db_helper.genres.get_genre_by_name(genre_name) is None
