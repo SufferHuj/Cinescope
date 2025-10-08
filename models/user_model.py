@@ -5,11 +5,7 @@ import datetime
 
 
 class CreateUserResponse(BaseModel):
-    """Модель ответа при создании нового пользователя.
-    
-    Содержит основную информацию о созданном пользователе,
-    включая его идентификатор, email, имя и роли.
-    """
+    """ Модель ответа при создании нового пользователя """
     
     id: str  # Уникальный идентификатор пользователя
     email: str = Field(pattern=r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", description="Email пользователя")
@@ -22,11 +18,7 @@ class CreateUserResponse(BaseModel):
 
 
 class GetUserResponse(BaseModel):
-    """Модель ответа при получении информации о пользователе.
-    
-    Расширенная версия CreateUserResponse с дополнительным полем
-    createdAt для отображения времени создания аккаунта.
-    """
+    """ Модель ответа при получении информации о пользователе """
     
     id: str  # Уникальный идентификатор пользователя
     email: str = Field(pattern=r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", description="Email пользователя")
@@ -40,15 +32,7 @@ class GetUserResponse(BaseModel):
 
     @field_validator("createdAt")
     def validate_created_at(cls, value: str) -> str:
-        """Валидатор для поля createdAt.
-        Проверяет, что дата создания соответствует формату ISO8601.
-        Args:
-            value: Строка с датой в формате ISO8601
-        Returns:
-            str: Валидная строка с датой
-        Raises:
-            ValueError: Если формат даты некорректный
-        """
+        """ Валидатор для поля createdAt. Проверяет, что дата создания соответствует формату ISO8601 """
 
         if value is not None:
             try:
@@ -59,10 +43,7 @@ class GetUserResponse(BaseModel):
 
 
 class GetUsersResponse(BaseModel):
-    """Модель ответа при получении списка пользователей с пагинацией.
-    Используется для возврата списка пользователей с метаданными
-    о пагинации (текущая страница, размер страницы, общее количество).
-    """
+    """ Модель ответа при получении списка пользователей с пагинацией """
 
     users: List[GetUserResponse]  # Список пользователей на текущей странице
     count: int = Field(ge=0, description="Общее количество пользователей")
@@ -73,10 +54,7 @@ class GetUsersResponse(BaseModel):
 
 
 class UpdateUserResponse(BaseModel):
-    """Модель ответа при обновлении информации о пользователе.
-    Содержит обновленную информацию о пользователе после
-    успешного выполнения операции обновления.
-    """
+    """ Модель ответа при обновлении информации о пользователе """
     
     id: Optional[str] = None  # Идентификатор пользователя (может быть None)
     email: str = Field(pattern=r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", description="Email пользователя")

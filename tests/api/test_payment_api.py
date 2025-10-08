@@ -7,20 +7,14 @@ from models.payment_model import CreatePaymentResponse, PaymentInfo, GetAllPayme
 
 
 class TestPaymentAPI:
-    """
-    Класс тестов для API платежей.
-    
-    Включает позитивные и негативные тесты для создания платежей,
-    получения истории платежей пользователей и валидации данных карт.
-    """
+    """ Класс тестов для API платежей """
 
     # ПОЗИТИВНЫЕ ТЕСТЫ
     # ТЕСТЫ ДЛЯ POST/create
     @pytest.mark.skip(reason="Тест падает с 503")
     def test_create_payment_success_with_correct_data(self, common_user, payment_request_data):
-        """
-        Проверка успешного создания платежа с корректными данными
-        """
+        """ Проверка успешного создания платежа с корректными данными """
+        
         response = common_user.api.payment_api.create_payment(
             payment_request_data=payment_request_data,
             expected_status=201
@@ -42,9 +36,7 @@ class TestPaymentAPI:
                              indirect=['general_user'],
                              ids=["super_admin_access", "admin_access"])
     def test_get_user_payments_by_id_success(self, general_user, expected_code):
-        """
-        Получение платежей пользователя по ID для ролей ADMIN и SUPER_ADMIN
-        """
+        """ Получение платежей пользователя по ID для ролей ADMIN и SUPER_ADMIN """
 
         # Получаем ID текущего пользователя
         user_response = general_user.api.user_api.get_user(general_user.email)
@@ -74,10 +66,7 @@ class TestPaymentAPI:
                              indirect=['general_user'],
                              ids=["super_admin", "admin", "common_user"])
     def test_create_user_payments_success(self, general_user, expected_code):
-        """
-        Проверка получения списка платежей для пользователей
-        general_user: Фикстура пользователя с определенной ролью (через indirect)
-        """
+        """ Проверка получения списка платежей для пользователей """
 
         response = general_user.api.payment_api.get_user_payments(expected_status=expected_code)
         
@@ -97,9 +86,7 @@ class TestPaymentAPI:
         ("admin", 1, 10, "SUCCESS", "asc", 200),
     ], indirect=['general_user'], ids=["super_admin_access", "admin_access"])
     def test_get_all_payments_success(self, general_user, page, page_size, status, created_at, expected_code):
-        """
-        Успешное получение всех платежей с пагинацией и фильтрацией.
-        """
+        """ Успешное получение всех платежей с пагинацией и фильтрацией """
 
         response = general_user.api.payment_api.get_find_all_user_payments(
             page=page,
@@ -125,9 +112,7 @@ class TestPaymentAPI:
     # ТЕСТЫ ДЛЯ POST/create
     @pytest.mark.negative
     def test_create_payment_invalid_card(self, common_user, payment_request_data):
-        """
-        Попытка оплаты неверным номером карты (INVALID_CARD)
-        """
+        """ Попытка оплаты неверным номером карты (INVALID_CARD) """
 
         invalid_payment_data = payment_request_data.copy()
         invalid_payment_data["card"] = invalid_payment_data["card"].copy()
@@ -142,9 +127,7 @@ class TestPaymentAPI:
 
     @pytest.mark.negative
     def test_create_payment_unauthorized(self, api_manager: ApiManager, payment_request_data):
-        """
-        Проверка оплаты создания платежа без авторизации
-        """
+        """ Проверка оплаты создания платежа без авторизации """
 
         response = api_manager.payment_api.create_payment(
             payment_request_data=payment_request_data,
@@ -155,9 +138,7 @@ class TestPaymentAPI:
 
     @pytest.mark.negative
     def test_create_payment_nonexistent_movie(self, common_user):
-        """
-        Проверка оплаты несуществующего фильма
-        """
+        """ Проверка оплаты несуществующего фильма """
 
         fake_movie_id = global_faker.random_number(digits=6, fix_len=True)
 
@@ -177,9 +158,7 @@ class TestPaymentAPI:
     # ТЕСТЫ ДЛЯ GET /user/{user_id}
     @pytest.mark.negative
     def test_get_user_payments_by_id_forbidden_user_role(self, common_user, super_admin):
-        """
-        Проверка запрета доступа для роли USER к платежам (даже к своим собственным)
-        """
+        """ Проверка запрета доступа для роли USER к платежам (даже к своим собственным) """
 
         user_response = super_admin.api.user_api.get_user(common_user.email)
         common_user_id = user_response.json()["id"]
@@ -193,9 +172,7 @@ class TestPaymentAPI:
 
     @pytest.mark.negative
     def test_get_user_payments_by_id_nonexistent_user(self, super_admin):
-        """
-        Проверка ошибки при запросе платежей несуществующего пользователя
-        """
+        """ Проверка ошибки при запросе платежей несуществующего пользователя """
 
         fake_user_id = global_faker.uuid4()
 
@@ -208,9 +185,7 @@ class TestPaymentAPI:
 
     @pytest.mark.negative
     def test_get_user_payments_by_id_unauthorized(self, api_manager: ApiManager):
-        """
-        Проверка ошибки при отсутствии авторизации
-        """
+        """ Проверка ошибки при отсутствии авторизации """
 
         fake_user_id = global_faker.uuid4()
 
@@ -223,9 +198,7 @@ class TestPaymentAPI:
 
     @pytest.mark.negative
     def test_get_user_payments_by_id_invalid_format(self, super_admin):
-        """
-        Проверка ошибки при невалидном формате ID пользователя
-        """
+        """ Проверка ошибки при невалидном формате ID пользователя """
 
         invalid_user_id = global_faker.pystr(min_chars=10, max_chars=20)
 
@@ -239,9 +212,7 @@ class TestPaymentAPI:
     # ТЕСТЫ ДЛЯ GET /user
     @pytest.mark.negative
     def test_get_user_payments_unauthorized(self, api_manager: ApiManager):
-        """
-        Проверка получения списка платежей без авторизации
-        """
+        """ Проверка получения списка платежей без авторизации """
 
         response = api_manager.payment_api.get_user_payments(expected_status=401)
 
@@ -258,9 +229,7 @@ class TestPaymentAPI:
     ])
     def test_get_find_all_user_payments_invalid_params(self, super_admin, page, page_size, status, created_at,
                                                        expected_code):
-        """
-        Проверки получения всех платежей с невалидными параметрами
-        """
+        """ Проверки получения всех платежей с невалидными параметрами """
 
         response = super_admin.api.payment_api.get_find_all_user_payments(
             page=page,
@@ -274,9 +243,7 @@ class TestPaymentAPI:
 
     @pytest.mark.negative
     def test_get_find_all_user_payments_negative(self, common_user):
-        """
-        Проверка ограничения доступа для пользователей без прав администратора
-        """
+        """ Проверка ограничения доступа для пользователей без прав администратора """
 
         response = common_user.api.payment_api.get_find_all_user_payments(
             page=1,
@@ -297,9 +264,7 @@ class TestPaymentAPI:
 
     @pytest.mark.negative
     def test_get_find_all_user_payments_unauthorized(self, api_manager: ApiManager):
-        """
-        Проверка получения всех платежей без авторизации
-        """
+        """ Проверка получения всех платежей без авторизации """
 
         response = api_manager.payment_api.get_find_all_user_payments(
             page=1,

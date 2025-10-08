@@ -1,7 +1,4 @@
-"""
-Модуль для работы с базой данных PostgreSQL.
-Содержит настройки подключения и создание сессий для работы с БД.
-"""
+""" Модуль для работы с бд PostgreSQL """
 
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
@@ -29,10 +26,8 @@ engine = create_engine(
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 def get_db_session():
-    """
-    Создает новую сессию БД.
-    :return: Объект сессии SQLAlchemy для работы с базой данных.
-    """
+    """ Создает новую сессию БД """
+    
     return SessionLocal()
 
 if __name__ == "__main__":

@@ -5,17 +5,10 @@ from utils.data_generator import DataGenerator
 
 
 class TestAuthAPI:
-    """
-    Класс тестов для API аутентификации.
-    
-    Включает позитивные и негативные тесты для операций регистрации
-    и авторизации пользователей.
-    """
+    """ Класс тестов для API аутентификации """
 
     def test_register_user(self, api_manager: ApiManager, test_user):
-        """
-        Тест на регистрацию пользователя.
-        """
+        """ Тест на регистрацию пользователя """
 
         response = api_manager.auth_api.register_user(test_user)
         response_data = RegisterUserResponse(**response.json())
@@ -27,9 +20,7 @@ class TestAuthAPI:
         assert response_data.createdAt is not None, "Дата создания пользователя отсутствует в ответе"
 
     def test_register_and_login_user(self, api_manager: ApiManager, registered_user):
-        """
-        Тест на регистрацию и авторизацию пользователя.
-        """
+        """ Тест на регистрацию и авторизацию пользователя """
 
         login_data = {
             "email": registered_user["email"],
@@ -50,9 +41,7 @@ class TestAuthAPI:
 
     @pytest.mark.negative
     def test_login_with_invalid_password(self, api_manager: ApiManager, registered_user):
-        """
-        Проверка авторизации с невалидным паролем.
-        """
+        """ Проверка авторизации с невалидным паролем """
 
         login_data = {
             "email": registered_user["email"],
@@ -68,9 +57,7 @@ class TestAuthAPI:
 
     @pytest.mark.negative
     def test_login_with_invalid_login(self, api_manager: ApiManager, registered_user):
-        """
-        Проверка авторизации с несуществующим email
-        """
+        """ Проверка авторизации с несуществующим email """
 
         login_data = {
             "email": DataGenerator.generation_random_email(),
@@ -86,9 +73,7 @@ class TestAuthAPI:
 
     @pytest.mark.negative
     def test_login_without_body(self, api_manager: ApiManager, registered_user):
-        """
-        Проверка авторизации с пустым телом запроса
-        """
+        """ Проверка авторизации с пустым телом запроса """
 
         login_data = {}
 

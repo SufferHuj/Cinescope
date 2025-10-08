@@ -1,3 +1,5 @@
+""" Модель фильма для работы с базой данных """
+
 from sqlalchemy import Column, String, Integer, Text, DateTime, Boolean, Float
 from sqlalchemy.orm import declarative_base
 from typing import Dict, Any
@@ -6,24 +8,7 @@ Base = declarative_base()
 
 
 class MovieDBModel(Base):
-    """
-    Модель фильма в БД.
-    
-    Представляет таблицу movies в базе данных PostgreSQL.
-    Содержит все необходимые поля для хранения информации о фильмах.
-    
-    Attributes:
-        id (int): Уникальный идентификатор фильма
-        name (str): Название фильма
-        price (int): Цена фильма в копейках
-        description (str): Описание фильма
-        image_url (str): URL изображения фильма
-        location (str): Местоположение показа
-        published (bool): Статус публикации фильма
-        rating (float): Рейтинг фильма
-        genre_id (int): ID жанра фильма
-        created_at (datetime): Дата и время создания записи
-    """
+    """ Модель фильма в БД """
 
     __tablename__ = 'movies'
 
@@ -39,12 +24,7 @@ class MovieDBModel(Base):
     created_at = Column(DateTime)  # timestamp в БД
 
     def to_dict(self) -> Dict[str, Any]:
-        """
-        Преобразование объекта фильма в словарь.
-        
-        Returns:
-            Dict[str, Any]: Словарь с данными фильма для сериализации
-        """
+        """ Преобразование объекта фильма в словарь. Returns: Словарь с данными фильма для сериализации """
 
         return {
             'id': self.id,
@@ -60,10 +40,6 @@ class MovieDBModel(Base):
         }
 
     def __repr__(self):
-        """
-        Строковое представление объекта фильма для отладки.
-        
-        Returns:
-            str: Строковое представление с основными атрибутами фильма
-        """
+        """ Строковое представление объекта фильма для отладки """
+
         return f"<Movie(id='{self.id}', name='{self.name}', price={self.price})>"

@@ -5,17 +5,10 @@ from utils.data_generator import DataGenerator
 
 
 class TestUser:
-    """
-    Класс тестов для API пользователей.
-    
-    Включает тесты для всех CRUD операций с пользователями,
-    управления ролями и проверки прав доступа.
-    """
+    """ Класс тестов для API пользователей """
 
     def test_create_user(self, super_admin, creation_user_data):
-        """
-        Успешное создание пользователя
-        """
+        """ Успешное создание пользователя """
 
         response = super_admin.api.user_api.create_user(creation_user_data)
         response_data = CreateUserResponse(**response.json())
@@ -27,9 +20,7 @@ class TestUser:
         assert response_data.verified is True, "Пользователь должен быть верифицирован"
 
     def test_patch_update_user(self, super_admin, creation_user_data):
-        """
-        Обновление данных пользователя через Patch
-        """
+        """ Обновление данных пользователя через Patch """
 
         params = {
             "roles": ["ADMIN"]
@@ -43,9 +34,7 @@ class TestUser:
         assert updated_patch_data.roles == ["ADMIN"], "Роли не обновились корректно"
 
     def test_get_user_by_locator(self, super_admin, creation_user_data):
-        """
-        Получение пользователя по локатору
-        """
+        """ Получение пользователя по локатору """
 
         created_user_response = super_admin.api.user_api.create_user(creation_user_data)
         created_user_data = CreateUserResponse(**created_user_response.json())
@@ -60,9 +49,7 @@ class TestUser:
         assert get_user_data.verified == created_user_data.verified, "Статус верификации не совпадает"
 
     def test_get_users_success(self, super_admin):
-        """
-        Успешное получение списка пользователей
-        """
+        """ Успешное получение списка пользователей """
 
         response = super_admin.api.user_api.get_users()
         users_data = GetUsersResponse(**response.json())
@@ -78,9 +65,7 @@ class TestUser:
         assert first_user.roles, "У пользователя должны быть роли"
 
     def test_get_users_pagination(self, super_admin):
-        """
-        Проверка пагинации при получении списка пользователей
-        """
+        """ Проверка пагинации при получении списка пользователей """
 
         response = super_admin.api.user_api.get_users()
         users_data = GetUsersResponse(**response.json())
@@ -93,9 +78,7 @@ class TestUser:
     # НЕГАТИВНЫЙ ТЕСТ
     @pytest.mark.negative
     def test_get_user_by_id_common_user(self, common_user):
-        """
-        Невалидное получение данных о пользователе (с ролью user недоступно)
-        """
+        """ Невалидное получение данных о пользователе (с ролью user недоступно) """
 
         response = common_user.api.user_api.get_user(common_user.email, expected_status=403)
         
@@ -108,9 +91,7 @@ class TestUser:
 
     @pytest.mark.negative
     def test_get_users_invalid_params(self, super_admin):
-        """
-        Невалидные параметры при получении списка пользователей
-        """
+        """ Невалидные параметры при получении списка пользователей """
 
         # Отправляем запрос с невалидным значением pageSize
         response_invalid_pagesize = super_admin.api.user_api.get_users(page_size=-1, expected_status=400)
@@ -142,9 +123,8 @@ class TestUser:
 
     @pytest.mark.negative
     def test_get_user_not_found(self, super_admin):
-        """
-        Получение несуществующего пользователя
-        """
+        """ Получение несуществующего пользователя """
+        
         non_existent_id = DataGenerator.generation_random_uuid()
 
         response = super_admin.api.user_api.create_user(non_existent_id, expected_status=400)

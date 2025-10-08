@@ -1,19 +1,11 @@
-import pytest
 from utils.data_generator import DataGenerator, faker
 
 
 class TestDBUsers:
-    """
-    Класс тестов для работы с базой данных пользователей.
-    
-    Включает тесты для создания, чтения, обновления и удаления пользователей,
-    а также проверки уникальности, валидации и различных методов поиска.
-    """
+    """ Тесты для работы с базой данных пользователей """
 
     def test_user_crud_operations(self, db_helper):
-        """
-        Тест базовых CRUD операций с пользователями
-        """
+        """ Тест базовых CRUD операций с пользователями """
         # Генерируем тестовые данные пользователя
         user_data = DataGenerator.generate_user_data()
         
@@ -59,9 +51,8 @@ class TestDBUsers:
             db_helper.cleanup_test_data([created_user])
 
     def test_user_count_methods(self, db_helper):
-        """
-        Тест методов подсчета количества пользователей
-        """
+        """ Тест методов подсчета количества пользователей """
+
         # Получаем изначальное количество пользователей ДО создания тестового пользователя
         initial_users_count = db_helper.get_total_users_count()
         
@@ -84,9 +75,8 @@ class TestDBUsers:
             db_helper.cleanup_test_data([created_user])
 
     def test_multiple_users_operations(self, db_helper):
-        """
-        Тест операций с несколькими пользователями
-        """
+        """ Тест операций с несколькими пользователями """
+
         # Создаем несколько пользователей с разными данными
         user_data_1 = DataGenerator.generate_user_data()
         user_data_1['full_name'] = f"Пользователь 1 - {faker.name()}"
@@ -134,9 +124,8 @@ class TestDBUsers:
             db_helper.cleanup_test_data([user1, user2, user3])
 
     def test_user_email_uniqueness(self, db_helper):
-        """
-        Тест уникальности email адресов
-        """
+        """ Тест уникальности email адресов """
+
         # Создаем первого пользователя
         user_data_1 = DataGenerator.generate_user_data()
         user1 = db_helper.create_test_user(user_data_1)

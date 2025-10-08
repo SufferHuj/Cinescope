@@ -6,19 +6,11 @@ from models.genre_model import CreateGenreResponse, GetGenreResponse
 
 
 class TestGenresAPI:
-    """
-    Класс тестов для API жанров.
-    
-    Включает тесты для всех CRUD операций с жанрами, проверки прав доступа
-    и валидации данных для различных ролей пользователей.
-    """
+    """ Тесты для API жанров с проверкой CRUD операций и прав доступа """
 
     # ТЕСТЫ ДЛЯ GET /genres
     def test_get_all_genres_success(self, api_manager: ApiManager):
-        """
-        Успешное получение списка всех жанров.
-        Доступно для всех пользователей (PUBLIC)
-        """
+        """ Успешное получение списка всех жанров (PUBLIC доступ) """
 
         response = api_manager.genres_api.get_genres(expected_status=200)
         response_data = response.json()
@@ -36,9 +28,7 @@ class TestGenresAPI:
             assert isinstance(genre_item.name, str), "Название жанра должно быть строкой"
 
     def test_get_genres_without_auth(self, api_manager: ApiManager):
-        """
-        Проверка получения жанров без авторизации
-        """
+        """ Проверка получения жанров без авторизации """
 
         # Создаем новый ApiManager без авторизации
         session = requests.Session()
@@ -52,9 +42,7 @@ class TestGenresAPI:
 
     # ТЕСТЫ ДЛЯ POST /genres
     def test_create_genre_success(self, genre_data, super_admin):
-        """
-        Успешное создание нового жанра с ролью SUPER_ADMIN
-        """
+        """ Успешное создание нового жанра с ролью SUPER_ADMIN """
 
         response = super_admin.api.genres_api.create_genre(
             genre_data=genre_data,
@@ -70,9 +58,7 @@ class TestGenresAPI:
 
     # ТЕСТЫ ДЛЯ DELETE /genres/{id}
     def test_delete_genre_success(self, super_admin, genre_data):
-        """
-        Успешное удаление жанра с ролью SUPER_ADMIN.
-        """
+        """ Успешное удаление жанра с ролью SUPER_ADMIN """
 
         # Создаем жанр для удаления
         create_response = super_admin.api.genres_api.create_genre(
@@ -98,10 +84,7 @@ class TestGenresAPI:
 
     # ТЕСТЫ ДЛЯ GET /genres/{id}
     def test_get_genre_by_id_success(self, api_manager: ApiManager, super_admin, genre_data):
-        """
-        Успешное получение жанра по ID.
-        Доступно для всех пользователей (PUBLIC).
-        """
+        """ Успешное получение жанра по ID (PUBLIC доступ) """
 
         # Сначала создаем жанр
         create_response = super_admin.api.genres_api.create_genre(
@@ -123,9 +106,7 @@ class TestGenresAPI:
         assert retrieved_genre.name == genre_data["name"], "Название жанра не совпадает"
 
     def test_get_genre_without_auth(self, api_manager: ApiManager, super_admin, genre_data):
-        """
-        Проверка получения жанра по ID без авторизации (PUBLIC доступ).
-        """
+        """ Проверка получения жанра по ID без авторизации (PUBLIC доступ) """
 
         # Создаем жанр
         create_response = super_admin.api.genres_api.create_genre(
@@ -152,9 +133,7 @@ class TestGenresAPI:
     # ТЕСТЫ ДЛЯ POST /genres
     @pytest.mark.negative
     def test_create_genre_invalid_user_role(self, common_user, genre_data):
-        """
-        Проверка создания жанра с невалидной ролью USER
-        """
+        """ Проверка создания жанра с невалидной ролью USER """
 
         response = common_user.api.genres_api.create_genre(
             genre_data=genre_data,
@@ -165,9 +144,7 @@ class TestGenresAPI:
 
     @pytest.mark.negative
     def test_create_genre_without_auth(self, genre_data, api_manager: ApiManager):
-        """
-        Проверка создания жанра без авторизации
-        """
+        """ Проверка создания жанра без авторизации """
 
         # Создаем новый ApiManager без авторизации
         session = requests.Session()
@@ -184,9 +161,7 @@ class TestGenresAPI:
 
     @pytest.mark.negative
     def test_create_genre_empty_name(self, super_admin, expected_status=409):
-        """
-        Проверка создания жанра с пустым названием
-        """
+        """ Проверка создания жанра с пустым названием """
 
         genre_date = {
             "name": ""
@@ -205,9 +180,7 @@ class TestGenresAPI:
 
     @pytest.mark.negative
     def test_create_genre_without_name(self, super_admin, expected_status=400):
-        """
-        Проверка создания жанра фильма без поля name
-        """
+        """ Проверка создания жанра фильма без поля name """
 
         response = super_admin.api.genres_api.create_genre(
             genre_data={},
@@ -228,14 +201,7 @@ class TestGenresAPI:
         ('common_user', 403)],
                              indirect=['general_user'])
     def test_delete_genre_permissions_by_user_role(self, general_user, super_admin, genre_data, expected_code):
-        """
-        Проверка прав доступа на удаление жанров для разных ролей пользователей.
-
-        Тест проверяет, что:
-        - SUPER_ADMIN может удалять жанры (статус 200)
-        - ADMIN с ролью SUPER_ADMIN может удалять жанры (статус 200)
-        - USER не может удалять жанры (статус 403)
-        """
+        """ Проверка прав доступа на удаление жанров для разных ролей пользователей """
 
         # Создаем жанр для удаления (используем super_admin)
         create_response = super_admin.api.genres_api.create_genre(
@@ -252,9 +218,7 @@ class TestGenresAPI:
 
     @pytest.mark.negative
     def test_delete_genre_invalid_id(self, super_admin):
-        """
-        Проверка удаления жанра с несуществующим ID.
-        """
+        """Проверка удаления жанра с несуществующим ID."""
 
         invalid_genre_id = random.randint(100, 10000)
         response = super_admin.api.genres_api.delete_genre_by_id(
@@ -267,9 +231,7 @@ class TestGenresAPI:
     # ТЕСТЫ ДЛЯ GET /genres/{id}
     @pytest.mark.negative
     def test_get_genre_by_invalid_id(self, api_manager: ApiManager):
-        """
-        Проверка получения жанра по несуществующему ID
-        """
+        """ Проверка получения жанра по несуществующему ID """
 
         invalid_genre_id = random.randint(1000, 9999)
         response = api_manager.genres_api.get_genres_by_id(invalid_genre_id, expected_status=404)
@@ -278,10 +240,7 @@ class TestGenresAPI:
 
     @pytest.mark.negative
     def test_delete_genre_success(self, super_admin, genre_data):
-        """
-        Успешное удаление жанра.
-        Доступно только для SUPER_ADMIN.
-        """
+        """ Успешное удаление жанра (доступно только для SUPER_ADMIN) """
 
         # Создаем жанр
         create_response = super_admin.api.genres_api.create_genre(

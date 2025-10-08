@@ -5,11 +5,7 @@ import datetime
 
 
 class TestUserData(BaseModel):
-    """Модель данных для тестирования пользователей.
-    
-    Используется для создания тестовых пользователей с валидацией
-    паролей и автоматической сериализацией ролей.
-    """
+    """ Модель данных для тестирования пользователей """
     
     email: str = Field(pattern="@")  # Email с базовой валидацией
     fullName: str  # Полное имя пользователя
@@ -23,28 +19,13 @@ class TestUserData(BaseModel):
     
     @field_serializer('roles')
     def serialize_roles(self, roles: List[Roles]) -> List[str]:
-        """Сериализатор для ролей пользователя.
-        Преобразует enum значения ролей в строки для JSON сериализации.
-        Args:
-            roles: Список ролей пользователя
-        Returns:
-            List[str]: Список строковых представлений ролей
-        """
+        """ Сериализатор для ролей пользователя """
 
         return [role.value for role in roles]
 
     @field_validator("passwordRepeat")
     def check_password_repeat(cls, value: str, info) -> str:
-        """Валидатор для проверки совпадения паролей.
-        Проверяет, что повторный пароль совпадает с основным паролем.
-        Args:
-            value: Повторный пароль
-            info: Информация о других полях модели 
-        Returns:
-            str: Валидный повторный пароль 
-        Raises:
-            ValueError: Если пароли не совпадают
-        """
+        """ Валидатор для проверки совпадения паролей """
 
         if "password" in info.data and value != info.data["password"]:
             raise ValueError("Пароли не совпадают")
@@ -52,10 +33,7 @@ class TestUserData(BaseModel):
 
 
 class RegisterUserResponse(BaseModel):
-    """Модель ответа при регистрации пользователя.
-    Содержит информацию о зарегистрированном пользователе,
-    включая время создания аккаунта.
-    """
+    """ Модель ответа при регистрации пользователя """
     
     id: str  # Уникальный идентификатор пользователя
     email: str = Field(pattern=r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", description="Email пользователя")
@@ -69,15 +47,7 @@ class RegisterUserResponse(BaseModel):
 
     @field_validator("createdAt")
     def validate_created_at(cls, value: str) -> str:
-        """Валидатор для поля createdAt.
-        Проверяет, что дата создания соответствует формату ISO8601.
-        Args:
-            value: Строка с датой в формате ISO8601
-        Returns:
-            str: Валидная строка с датой 
-        Raises:
-            ValueError: Если формат даты некорректный
-        """
+        """ Валидатор для поля createdAt. Проверяет, что дата создания соответствует формату ISO8601 """
 
         if value is not None:
             try:
@@ -88,10 +58,7 @@ class RegisterUserResponse(BaseModel):
 
 
 class LoginUserResponse(BaseModel):
-    """Модель ответа при успешном входе в систему.
-    Содержит токены доступа и информацию о пользователе
-    для аутентификации в последующих запросах.
-    """
+    """ Модель ответа при успешном входе в систему """
     
     accessToken: str  # JWT токен для доступа к API
     refreshToken: str  # Токен для обновления access токена
@@ -101,10 +68,7 @@ class LoginUserResponse(BaseModel):
 
 
 class ErrorResponse(BaseModel):
-    """Модель ответа при возникновении ошибки.
-    Стандартизированный формат для возврата информации об ошибках
-    с поддержкой как одиночных сообщений, так и списка ошибок.
-    """
+    """ Модель ответа при возникновении ошибки """
     
     error: Optional[str] = Field(default=None, description="Сообщение об ошибке")
     message: Optional[Union[str, List[str]]] = Field(default=None, description="Дополнительное сообщение об ошибке")

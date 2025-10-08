@@ -1,21 +1,9 @@
-from pydantic import BaseModel, Field, ConfigDict, field_validator
+from pydantic import BaseModel, Field, ConfigDict
 from typing import Optional
 
 
 class CreateReviewResponse(BaseModel):
-    """
-    Модель ответа при создании отзыва к фильму.
-    
-    Содержит информацию о созданном отзыве, включая ID пользователя,
-    текст отзыва, рейтинг, дату создания и информацию о пользователе.
-    
-    Attributes:
-        userId (str): Уникальный идентификатор пользователя
-        text (str): Текст отзыва
-        rating (int): Рейтинг фильма от 1 до 5
-        createdAt (str): Дата и время создания отзыва в формате ISO
-        user (dict): Информация о пользователе, создавшем отзыв
-    """
+    """ Модель ответа при создании отзыва к фильму """
     
     userId: str = Field(..., description="ID пользователя, создавшего отзыв")
     text: str = Field(..., description="Текст отзыва")
@@ -30,22 +18,7 @@ class CreateReviewResponse(BaseModel):
 
 
 class GetReviewResponse(BaseModel):
-    """
-    Модель ответа при получении отзыва к фильму.
-    
-    Используется для валидации ответа API при получении информации об отзыве.
-    Содержит полную информацию об отзыве.
-    
-    Attributes:
-        userId (int): ID пользователя, создавшего отзыв
-        rating (int): Рейтинг фильма от 1 до 5
-        text (str): Текст отзыва
-        movieId (Optional[int]): ID фильма
-        createdAt (Optional[str]): Дата и время создания отзыва
-        updatedAt (Optional[str]): Дата и время последнего обновления отзыва
-        isHidden (Optional[bool]): Флаг скрытия отзыва
-        userName (Optional[str]): Имя пользователя, создавшего отзыв
-    """
+    """ Модель ответа при получении отзыва к фильму """
     
     userId: int = Field(..., description="ID пользователя, создавшего отзыв")
     rating: int = Field(..., ge=1, le=5, description="Рейтинг фильма")
@@ -63,20 +36,7 @@ class GetReviewResponse(BaseModel):
 
 
 class UpdateReviewResponse(BaseModel):
-    """
-    Модель ответа при обновлении отзыва к фильму.
-    
-    Содержит информацию об обновленном отзыве, включая ID фильма,
-    ID пользователя, статус скрытия, текст, рейтинг и дату создания.
-    
-    Attributes:
-        movieId (int): Уникальный идентификатор фильма
-        userId (str): Уникальный идентификатор пользователя
-        hidden (bool): Статус скрытия отзыва
-        text (str): Обновленный текст отзыва
-        rating (int): Обновленный рейтинг фильма от 1 до 5
-        createdAt (str): Дата и время создания отзыва в формате ISO
-    """
+    """ Модель ответа при обновлении отзыва к фильму """
     
     movieId: int = Field(..., description="ID фильма")
     userId: str = Field(..., description="ID пользователя")
@@ -92,19 +52,7 @@ class UpdateReviewResponse(BaseModel):
 
 
 class HideShowReviewResponse(BaseModel):
-    """
-    Модель ответа при скрытии или показе отзыва к фильму.
-    
-    Содержит информацию об отзыве после операции скрытия/показа,
-    включая ID пользователя, текст, рейтинг, дату создания и информацию о пользователе.
-    
-    Attributes:
-        userId (str): Уникальный идентификатор пользователя
-        text (str): Текст отзыва
-        rating (int): Рейтинг фильма от 1 до 5
-        createdAt (str): Дата и время создания отзыва в формате ISO
-        user (dict): Информация о пользователе
-    """
+    """ Модель ответа при скрытии или показе отзыва к фильму """
     
     userId: str = Field(..., description="ID пользователя")
     text: str = Field(..., description="Текст отзыва")

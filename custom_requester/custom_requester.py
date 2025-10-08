@@ -6,12 +6,7 @@ from pydantic import BaseModel
 
 
 class CustomRequester:
-    """
-    Инициализация кастомного реквестера
-    :param session: Объект requests.Session
-    :param base_url: Базовый URL API
-    :param default_headers: Заголовки, которые будут использоваться по умолчанию для всех запросов
-    """
+    """ Инициализация кастомного реквестера """
 
     def __init__(self, session, base_url=BASE_URL, default_headers=None):
         self.session = session
@@ -28,17 +23,7 @@ class CustomRequester:
 
     def send_request(self, method, endpoint, data=None, params=None, headers=None, expected_status=200,
                      need_logging=True):
-        """
-        Универсальный метод для отправки запросов.
-        :param method: HTTP метод (GET, POST, PUT, DELETE и т.д.).
-        :param endpoint: эндпоинт (например, "/login").
-        :param data: Тело запроса (JSON-данные).
-        :param params: Параметры запроса (для GET-запросов).
-        :param headers: Дополнительные заголовки для данного конкретного запроса.
-        :param expected_status: Ожидаемый статус-код (по умолчанию 200).
-        :param need_logging: Флаг для логирования (по умолчанию True).
-        :return: Объект ответа requests.Response.
-        """
+        """ Универсальный метод для отправки запросов """
 
         url = f"{self.base_url}{endpoint}"
 
@@ -67,20 +52,13 @@ class CustomRequester:
         return response
 
     def _update_session_headers(self, **kwargs):
-        """
-        Обновление заголовков сессии.
-        :param session: Объект requests.Session, предоставленный API-классом.
-        :param kwargs: Дополнительные заголовки.
-        """
+        """ Обновление заголовков сессии """
+        
         self.session.headers.update(kwargs)  # Обновляем базовые заголовки
 
     def log_request_and_response(self, response):
-        """
-        Логгирование запросов и ответов. Настройки логгирования описаны в pytest.ini
-        Преобразует вывод в curl-like (-H хэдэеры), (-d тело)
-
-        :param response: Объект response получаемый из метода "send_request"
-        """
+        """ Логгирование запросов и ответов. Настройки логгирования описаны в pytest.ini """
+        
         try:
             request = response.request
             headers = " \\ ".join([f"-H '{header}: {value}'" for header, value in request.headers.items()])

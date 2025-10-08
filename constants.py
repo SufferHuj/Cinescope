@@ -1,14 +1,18 @@
 from enum import Enum
+import enum
+
+
+class PaymentStatus(enum.Enum):
+    """ Перечисление статусов платежа. Соответствует типу public."Status" в базе данных """
+
+    SUCCESS = "SUCCESS"
+    INVALID_CARD = "INVALID_CARD"
+    ERROR = "ERROR"
 
 
 class Roles(str, Enum):
-    """Перечисление ролей пользователей в системе.
+    """Перечисление ролей пользователей в системе """
     
-    Определяет доступные роли с различными уровнями доступа:
-    - USER: Обычный пользователь
-    - ADMIN: Администратор с расширенными правами
-    - SUPER_ADMIN: Суперадминистратор с полными правами
-    """
     USER = "USER"
     ADMIN = "ADMIN"
     SUPER_ADMIN = "SUPER_ADMIN"
