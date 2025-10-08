@@ -12,7 +12,6 @@ class TestMovieAPI:
         response = common_user.api.movies_api.get_movies(movie_data)
         response_data = response.json()
 
-        # Валидация структуры ответа через Pydantic модель
         movies_response = GetMoviesResponse(**response_data)
         
         assert movies_response.movies is not None, "Список фильмов не должен быть None"
@@ -35,7 +34,6 @@ class TestMovieAPI:
     def test_filter_movies_by_price(self, common_user, min_price, max_price, location, genre_id):
         """ Фильтрация фильмов по minPrice и maxPrice """
 
-        # Создаем параметры фильтрации через Pydantic модель
         filter_params = MovieFilterParams(
             minPrice=min_price,
             maxPrice=max_price,
@@ -46,7 +44,6 @@ class TestMovieAPI:
         response = common_user.api.movies_api.get_movies(params=filter_params.model_dump(exclude_none=True), expected_status=200)
         response_data = response.json()
 
-        # Валидация структуры ответа через Pydantic модель
         movies_response = GetMoviesResponse(**response_data)
         
         assert movies_response.movies is not None, "Список фильмов не должен быть None"
@@ -69,7 +66,6 @@ class TestMovieAPI:
         response = common_user.api.movies_api.get_movie(create_movie)
         response_data = response.json()
 
-        # Валидация структуры ответа через Pydantic модель
         movie_response = GetMovieResponse(**response_data)
         
         assert movie_response.id == create_movie, "ID фильма не совпадает с запрошенным"
@@ -79,7 +75,6 @@ class TestMovieAPI:
     def test_create_movie_valid_data(self, movie_data, super_admin):
         """ Успешное создание фильма с валидными данными (SUPER_ADMIN) """
 
-        # Валидация входных данных через Pydantic модель
         movie_input = MovieData(**movie_data)
 
         response = super_admin.api.movies_api.create_movie(
@@ -88,7 +83,6 @@ class TestMovieAPI:
         )
         response_data = response.json()
 
-        # Валидация структуры ответа через Pydantic модель
         create_response = CreateMovieResponse(**response_data)
         
         assert create_response.id is not None, "ID не должен быть None в ответе на создание фильма"
@@ -108,10 +102,7 @@ class TestMovieAPI:
             movie_id=movie_id_to_delete,
             expected_status=200
         )
-
-        assert response.status_code == 200, f"Ожидался статус 200, получен {response.status_code}"
         
-        # Валидация структуры ответа через Pydantic модель (если API возвращает структурированный ответ)
         try:
             response_data = response.json()
             delete_response = DeleteMovieResponse(**response_data)
@@ -121,7 +112,6 @@ class TestMovieAPI:
             # Если API не возвращает JSON или структурированный ответ, пропускаем валидацию
             pass
 
-        # Получить удаленный фильм, ожидаем 404 Not Found
         with pytest.raises(ValueError) as ex:
             super_admin.api.movies_api.get_movie(
                 movie_id=movie_id_to_delete
@@ -135,17 +125,13 @@ class TestMovieAPI:
     def test_create_movie_with_invalid_user(self, movie_data, common_user):
         """ Проверка создания фильма под ролью USER """
 
-        # Валидация входных данных через Pydantic модель
         movie_input = MovieData(**movie_data)
 
         response = common_user.api.movies_api.create_movie(
             movie_data=movie_input.model_dump(),
             expected_status=403
         )
-
-        assert response.status_code == 403, f"Ожидался статус 403, получен {response.status_code}"
         
-        # Валидация структуры ошибки через Pydantic модель (если API возвращает структурированную ошибку)
         try:
             response_data = response.json()
             error_response = MovieErrorResponse(**response_data)
@@ -166,7 +152,4 @@ class TestMovieAPI:
     def test_delete_movie_by_user_role(self, general_user, create_movie, expected_code):
         """ Проверка прав доступа на удаление фильмов для разных ролей пользователей """
 
-        movie_id = create_movie
-        response = general_user.api.movies_api.delete_movie(movie_id, expected_status=expected_code)
-
-        assert response.status_code == expected_code
+        general_user.api.movies_api.delete_movie(create_movie, expected_status=expected_code)

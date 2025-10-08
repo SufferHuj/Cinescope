@@ -13,7 +13,7 @@ class TestUser:
         response = super_admin.api.user_api.create_user(creation_user_data)
         response_data = CreateUserResponse(**response.json())
 
-        assert response_data.id and response_data.id != '', "ID должен быть не пустым"
+        assert response_data.id, "ID должен быть не пустым"
         assert response_data.email == creation_user_data['email'], "Email не совпадает"
         assert response_data.fullName == creation_user_data['fullName'], "Имя не совпадает"
         assert response_data.roles == creation_user_data['roles'], "Роли не совпадают"
@@ -55,7 +55,7 @@ class TestUser:
         users_data = GetUsersResponse(**response.json())
 
         assert isinstance(users_data.users, list), "Ответ должен быть списком"
-        assert len(users_data.users) > 0, "Список пользователей не должен быть пустым"
+        assert users_data.users, "Список пользователей не должен быть пустым"
 
         # Проверяем структуру первого пользователя
         first_user = users_data.users[0]
@@ -70,10 +70,10 @@ class TestUser:
         response = super_admin.api.user_api.get_users()
         users_data = GetUsersResponse(**response.json())
 
-        assert users_data.users is not None, "В ответе должен быть список пользователей"
-        assert users_data.count is not None, "В ответе должен быть ключ 'count'"
-        assert users_data.page is not None, "В ответе должен быть ключ 'page'"
-        assert users_data.pageSize is not None, "В ответе должен быть ключ 'pageSize'"
+        assert isinstance(users_data.users, list), "В ответе должен быть список пользователей"
+        assert isinstance(users_data.count, int), "В ответе должен быть ключ 'count'"
+        assert isinstance(users_data.page, int), "В ответе должен быть ключ 'page'"
+        assert isinstance(users_data.pageSize, int), "В ответе должен быть ключ 'pageSize'"
 
     # НЕГАТИВНЫЙ ТЕСТ
     @pytest.mark.negative
@@ -81,8 +81,6 @@ class TestUser:
         """ Невалидное получение данных о пользователе (с ролью user недоступно) """
 
         response = common_user.api.user_api.get_user(common_user.email, expected_status=403)
-        
-        assert response.status_code == 403
         
         error_data = ErrorResponse(**response.json())
         assert error_data.error == "Forbidden", "Ошибка должна быть 'Forbidden'"
@@ -95,21 +93,13 @@ class TestUser:
 
         # Отправляем запрос с невалидным значением pageSize
         response_invalid_pagesize = super_admin.api.user_api.get_users(page_size=-1, expected_status=400)
-        assert response_invalid_pagesize.status_code == 400
-
         # Проверяем невалидное значение page
         response_invalid_page = super_admin.api.user_api.get_users(page=-1, expected_status=400)
-        assert response_invalid_page.status_code == 400
-
         # Проверяем невалидное значение roles (несуществующая роль)
         response_invalid_roles = super_admin.api.user_api.get_users(roles=["INVALID_ROLE"], expected_status=[400, 500])
-        assert response_invalid_roles.status_code in [400, 500]
-
         # Проверяем невалидное значение createdAt
         response_invalid_created_at = super_admin.api.user_api.get_users(created_at="invalid_sort",
                                                                          expected_status=[400, 500])
-        assert response_invalid_created_at.status_code in [400, 500]
-
         # Проверяем, что все ответы содержат валидные сообщения об ошибках
         responses_to_check = [response_invalid_pagesize, response_invalid_page, response_invalid_roles, response_invalid_created_at]
         
@@ -128,7 +118,6 @@ class TestUser:
         non_existent_id = DataGenerator.generation_random_uuid()
 
         response = super_admin.api.user_api.create_user(non_existent_id, expected_status=400)
-        assert response.status_code == 400
 
         error_data = ErrorResponse(**response.json())
         assert error_data.error, "Должно быть сообщение об ошибке"

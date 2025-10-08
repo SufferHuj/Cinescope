@@ -20,12 +20,10 @@ class TestPaymentAPI:
             expected_status=201
         )
 
-        # Валидация ответа с помощью Pydantic модели
         CreatePaymentResponse(**response.json())
 
         response_data = response.json()
 
-        assert response.status_code == 201, f"Ожидался статус 201, получен {response.status_code}"
         assert "status" in response_data, "Ответ должен содержать статус платежа"
         assert response_data["status"] == "SUCCESS", "Статус платежа должен быть SUCCESS"
 
@@ -47,15 +45,11 @@ class TestPaymentAPI:
             expected_status=expected_code
         )
 
-        # Валидация ответа с помощью Pydantic модели
         payments_data = response.json()
         for payment in payments_data:
             PaymentInfo(**payment)
 
-        response_data = response.json()
-
-        assert response.status_code == expected_code, f"Ожидался статус {expected_code}, получен {response.status_code}"
-        assert isinstance(response_data, list), "Ответ должен содержать список платежей"
+        assert isinstance(payments_data, list), "Ответ должен содержать список платежей"
 
     # ТЕСТЫ ДЛЯ GET /user
     @pytest.mark.skip(reason="Тест под админом падает с 403")
@@ -70,15 +64,11 @@ class TestPaymentAPI:
 
         response = general_user.api.payment_api.get_user_payments(expected_status=expected_code)
         
-        # Валидация ответа с помощью Pydantic модели
         payments_data = response.json()
         for payment in payments_data:
             PaymentInfo(**payment)
-            
-        response_data = response.json()
 
-        assert response.status_code == 200, f"Ожидался статус код 200, получен {response.status_code}"
-        assert isinstance(response_data, list), "Ответ должен быть списком платежей"
+        assert isinstance(payments_data, list), "Ответ должен быть списком платежей"
 
     # ТЕСТЫ GET /find-all
     @pytest.mark.parametrize('general_user, page, page_size, status, created_at, expected_code', [
@@ -96,12 +86,10 @@ class TestPaymentAPI:
             expected_status=expected_code
         )
 
-        # Валидация ответа с помощью Pydantic модели
         GetAllPaymentsResponse(**response.json())
 
         response_data = response.json()
 
-        assert response.status_code == expected_code, f"Ожидался статус {expected_code}, получен {response.status_code}"
         assert 'payments' in response_data, "В ответе должен быть ключ 'payments'"
         assert 'count' in response_data, "В ответе должен быть ключ 'count'"
         assert 'page' in response_data, "В ответе должен быть ключ 'page'"
@@ -118,23 +106,19 @@ class TestPaymentAPI:
         invalid_payment_data["card"] = invalid_payment_data["card"].copy()
         invalid_payment_data["card"]["cardNumber"] = global_faker.random_number(digits=16)  # Невалидный номер
 
-        response = common_user.api.payment_api.create_payment(
+        common_user.api.payment_api.create_payment(
             payment_request_data=invalid_payment_data,
             expected_status=400
         )
-
-        assert response.status_code == 400
 
     @pytest.mark.negative
     def test_create_payment_unauthorized(self, api_manager: ApiManager, payment_request_data):
         """ Проверка оплаты создания платежа без авторизации """
 
-        response = api_manager.payment_api.create_payment(
+        api_manager.payment_api.create_payment(
             payment_request_data=payment_request_data,
             expected_status=401
         )
-
-        assert response.status_code == 401
 
     @pytest.mark.negative
     def test_create_payment_nonexistent_movie(self, common_user):
@@ -148,12 +132,10 @@ class TestPaymentAPI:
             "card": TestCardData.CARD_DATA
         }
 
-        response = common_user.api.payment_api.create_payment(
+        common_user.api.payment_api.create_payment(
             payment_request_data=payment_request_data,
             expected_status=404
         )
-
-        assert response.status_code == 404
 
     # ТЕСТЫ ДЛЯ GET /user/{user_id}
     @pytest.mark.negative
@@ -163,12 +145,10 @@ class TestPaymentAPI:
         user_response = super_admin.api.user_api.get_user(common_user.email)
         common_user_id = user_response.json()["id"]
 
-        response = common_user.api.payment_api.get_user_payments_by_id(
+        common_user.api.payment_api.get_user_payments_by_id(
             user_id=common_user_id,
             expected_status=403
         )
-
-        assert response.status_code == 403
 
     @pytest.mark.negative
     def test_get_user_payments_by_id_nonexistent_user(self, super_admin):
@@ -176,12 +156,10 @@ class TestPaymentAPI:
 
         fake_user_id = global_faker.uuid4()
 
-        response = super_admin.api.payment_api.get_user_payments_by_id(
+        super_admin.api.payment_api.get_user_payments_by_id(
             user_id=fake_user_id,
             expected_status=404
         )
-
-        assert response.status_code == 404
 
     @pytest.mark.negative
     def test_get_user_payments_by_id_unauthorized(self, api_manager: ApiManager):
@@ -189,12 +167,10 @@ class TestPaymentAPI:
 
         fake_user_id = global_faker.uuid4()
 
-        response = api_manager.payment_api.get_user_payments_by_id(
+        api_manager.payment_api.get_user_payments_by_id(
             user_id=fake_user_id,
             expected_status=401
         )
-
-        assert response.status_code == 401
 
     @pytest.mark.negative
     def test_get_user_payments_by_id_invalid_format(self, super_admin):
@@ -202,21 +178,17 @@ class TestPaymentAPI:
 
         invalid_user_id = global_faker.pystr(min_chars=10, max_chars=20)
 
-        response = super_admin.api.payment_api.get_user_payments_by_id(
+        super_admin.api.payment_api.get_user_payments_by_id(
             user_id=invalid_user_id,
             expected_status=404
         )
-
-        assert response.status_code == 404
 
     # ТЕСТЫ ДЛЯ GET /user
     @pytest.mark.negative
     def test_get_user_payments_unauthorized(self, api_manager: ApiManager):
         """ Проверка получения списка платежей без авторизации """
 
-        response = api_manager.payment_api.get_user_payments(expected_status=401)
-
-        assert response.status_code == 401
+        api_manager.payment_api.get_user_payments(expected_status=401)
 
     # ТЕСТЫ GET /find-all
     @pytest.mark.negative
@@ -231,15 +203,13 @@ class TestPaymentAPI:
                                                        expected_code):
         """ Проверки получения всех платежей с невалидными параметрами """
 
-        response = super_admin.api.payment_api.get_find_all_user_payments(
+        super_admin.api.payment_api.get_find_all_user_payments(
             page=page,
             page_size=page_size,
             status=status,
             created_at=created_at,
             expected_status=expected_code
         )
-
-        assert response.status_code == expected_code, f"Ожидался статус {expected_code}, получен {response.status_code}"
 
     @pytest.mark.negative
     def test_get_find_all_user_payments_negative(self, common_user):
@@ -253,12 +223,10 @@ class TestPaymentAPI:
             expected_status=403
         )
         
-        # Валидация ответа с помощью Pydantic модели для ошибок
         PaymentErrorResponse(**response.json())
         
         response_data = response.json()
 
-        assert response.status_code == 403, f"Ожидался статус 403, получен {response.status_code}"
         assert "error" in response_data, "Ответ должен содержать сообщение об ошибке"
         assert response_data["message"] == "Forbidden resource", "Ответ должен содержать причину ошибки"
 
@@ -266,12 +234,10 @@ class TestPaymentAPI:
     def test_get_find_all_user_payments_unauthorized(self, api_manager: ApiManager):
         """ Проверка получения всех платежей без авторизации """
 
-        response = api_manager.payment_api.get_find_all_user_payments(
+        api_manager.payment_api.get_find_all_user_payments(
             page=1,
             page_size=10,
             status="SUCCESS",
             created_at="asc",
             expected_status=401
         )
-
-        assert response.status_code == 401
