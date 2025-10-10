@@ -21,4 +21,7 @@ from fixtures.payment_fixtures import *
 
 # Фикстуры для БД тестов
 from fixtures.db_fixtures import *
+
+# Фикстуры для UI тестов
+from fixtures.ui_fixtures import *
     
