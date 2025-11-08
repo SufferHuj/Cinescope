@@ -19,15 +19,13 @@ class DataGenerator:
 
     @staticmethod
     def generation_random_name():
-        """ Генерация случайного полного имени пользователя. 
-        Returns: str Полное имя в формате "Имя Фамилия" """
+        """ Генерация случайного полного имени пользователя """
 
         return f"{faker.first_name()} {faker.last_name()}"
 
     @staticmethod
     def generation_random_password():
-        """ Генерация пароля, соответствующего требованиям системы. 
-        Returns: str Сгенерированный пароль, соответствующий всем требованиям """
+        """ Генерация пароля, соответствующего требованиям системы """
 
         # Гарантируем наличие хотя бы одной буквы и одной цифры
         letters = random.choice(string.ascii_lowercase)  # одна буква
@@ -49,15 +47,13 @@ class DataGenerator:
 
     @staticmethod
     def generation_random_uuid():
-        """ Генерация случайного UUID для идентификации объектов. 
-        Returns: str UUID в строковом формате """
+        """ Генерация случайного UUID для идентификации объектов """
 
         return str(uuid.uuid4())
 
     @staticmethod
     def generate_user_data() -> dict:
-        """ Генерирует полный набор данных для создания тестового пользователя через БД.
-        Returns: dict  с данными пользователя для вставки в БД """
+        """ Генерирует полный набор данных для создания тестового пользователя через БД """
         
         return {
             'id': f'{uuid.uuid4()}',  # генерируем UUID как строку
