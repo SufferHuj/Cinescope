@@ -19,7 +19,7 @@ DATABASE_NAME = MoviesDbCreds.DATABASE_NAME
 # Движок для подключения к базе данных PostgreSQL
 engine = create_engine(
     f"postgresql+psycopg2://{USERNAME}:{PASSWORD}@{HOST}:{PORT}/{DATABASE_NAME}",
-    echo=True  # Установить True для отладки SQL запросов
+    echo=False  # Установить True для отладки SQL запросов
 )
 
 # Создаем фабрику сессий для работы с БД
