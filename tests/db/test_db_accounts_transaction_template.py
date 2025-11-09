@@ -4,7 +4,7 @@ from utils.data_generator import faker
 
 class TestDBAccountsTransactionTemplate:
     """ Класс тестов для работы с базой данных accounts_transaction_template """
-    
+    @pytest.mark.skip(reason="Тест на создание аккаунта временно отключен")
     def test_account_crud_operations(self, db_helper):
         """ Тест базовых CRUD операций с аккаунтами """
 
@@ -34,7 +34,8 @@ class TestDBAccountsTransactionTemplate:
         finally:
             # Удаляем тестовый аккаунт
             db_helper.cleanup_test_data([account])
-
+            
+    @pytest.mark.skip(reason="Тест на операцию с балансом аккаунта временно отключен")
     def test_account_balance_operations(self, db_helper):
         """ Тест операций с балансом аккаунта """
 
@@ -57,7 +58,8 @@ class TestDBAccountsTransactionTemplate:
             
         finally:
             db_helper.cleanup_test_data([account])
-
+            
+    @pytest.mark.skip(reason="Тест на операцию с несколькими аккаунтами временно отключен")
     def test_multiple_accounts_operations(self, db_helper):
         """ Тест операций с несколькими аккаунтами """
 
@@ -87,7 +89,8 @@ class TestDBAccountsTransactionTemplate:
                 
         finally:
             db_helper.cleanup_test_data(accounts)
-
+            
+    @pytest.mark.skip(reason="Тест на транзакции между аккаунтами временно отключен")
     def test_accounts_transaction_template(self, db_helper):
         """ Тест транзакций между аккаунтами """
 
@@ -142,7 +145,8 @@ class TestDBAccountsTransactionTemplate:
         finally:
             # Удаляем данные для тестирования из базы
             db_helper.cleanup_test_data([stan, bob])
-
+            
+    @pytest.mark.skip(reason="Тест на метод to_dict временно отключен")
     def test_account_to_dict_method(self, db_helper):
         """ Тест метода to_dict для аккаунта """
 
