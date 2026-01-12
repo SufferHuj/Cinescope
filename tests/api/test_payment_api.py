@@ -3,7 +3,7 @@ import pytest
 from resources.test_card_data import TestCardData
 from utils.data_generator import faker as global_faker
 from api.api_manager import ApiManager
-from models.payment_model import CreatePaymentResponse, PaymentInfo, GetAllPaymentsResponse, PaymentErrorResponse
+from api_models.payment_model import CreatePaymentResponse, PaymentInfo, GetAllPaymentsResponse, PaymentErrorResponse
 
 
 class TestPaymentAPI:

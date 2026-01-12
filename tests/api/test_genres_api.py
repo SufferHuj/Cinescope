@@ -2,7 +2,7 @@ import pytest
 import requests
 import random
 from api.api_manager import ApiManager
-from models.genre_model import CreateGenreResponse, GetGenreResponse
+from api_models.genre_model import CreateGenreResponse, GetGenreResponse
 
 
 class TestGenresAPI:

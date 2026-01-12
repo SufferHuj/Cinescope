@@ -1,6 +1,6 @@
 import pytest
-from models.user_model import CreateUserResponse, GetUserResponse, GetUsersResponse, UpdateUserResponse
-from models.auth_model import ErrorResponse
+from api_models.user_model import CreateUserResponse, GetUserResponse, GetUsersResponse, UpdateUserResponse
+from api_models.auth_model import ErrorResponse
 from utils.data_generator import DataGenerator
 
 
