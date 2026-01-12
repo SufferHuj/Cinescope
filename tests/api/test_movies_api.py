@@ -1,5 +1,5 @@
 import pytest
-from models.movie_model import MovieData, CreateMovieResponse, GetMovieResponse, GetMoviesResponse, DeleteMovieResponse, MovieFilterParams, MovieErrorResponse
+from api_models.movie_model import MovieData, CreateMovieResponse, GetMovieResponse, GetMoviesResponse, DeleteMovieResponse, MovieFilterParams, MovieErrorResponse
 
 
 class TestMovieAPI:

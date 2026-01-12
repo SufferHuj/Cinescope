@@ -2,7 +2,7 @@ import pytest
 
 from constants import Roles
 from entities.user import User
-from models.auth_model import TestUserData
+from api_models.auth_model import TestUserData
 from resources.user_creds import SuperAdminCreds
 from utils.data_generator import DataGenerator
 

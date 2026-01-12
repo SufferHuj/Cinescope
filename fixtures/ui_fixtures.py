@@ -8,7 +8,7 @@ DEFAULT_UI_TIMEOUT = 60000  # Пример значения таймаута
 @pytest.fixture(scope="session")  # Браузер запускается один раз для всей сессии
 def browser():
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True, slow_mo=50)  # headless=True для CI/CD, headless=False для локальной разработки
+        browser = p.chromium.launch(headless=False, slow_mo=50)  # headless=True для CI/CD, headless=False для локальной разработки
         yield browser  # yield возвращает значение фикстуры, выполнение теста продолжится после yield
         browser.close()  # Браузер закрывается после завершения всех тестов
 

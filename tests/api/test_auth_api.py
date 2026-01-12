@@ -1,6 +1,6 @@
 import pytest
 from api.api_manager import ApiManager
-from models.auth_model import RegisterUserResponse, LoginUserResponse, ErrorResponse
+from api_models.auth_model import RegisterUserResponse, LoginUserResponse, ErrorResponse
 from utils.data_generator import DataGenerator
 
 

@@ -1,7 +1,7 @@
 import pytest
 from api.api_manager import ApiManager
 from utils.data_generator import faker as global_faker
-from models.review_model import CreateReviewResponse, GetReviewResponse, UpdateReviewResponse, HideShowReviewResponse
+from api_models.review_model import CreateReviewResponse, GetReviewResponse, UpdateReviewResponse, HideShowReviewResponse
 
 
 class TestReviewsAPI:
